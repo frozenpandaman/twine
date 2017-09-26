@@ -19,9 +19,11 @@ class App(wx.App):
         wx.App.__init__(self, redirect = redirect)
         locale.setlocale(locale.LC_ALL, '')
         self.stories = []
+        self.hiddenwindows = []
         self.loadPrefs()
         self.determinePaths()
         self.loadTargetHeaders()
+        self.SetExitOnFrameDelete(True) # default
 
         if not len(self.headers):
             self.displayError('starting up: there are no story formats available!\n\n'
@@ -39,19 +41,33 @@ class App(wx.App):
             pass
 
 
-        # restore save location
+        # don't restore save location
+        # try:
+        #     os.chdir(self.config.Read('savePath'))
+        # except:
+        #     os.chdir(os.path.expanduser('~'))
 
-        try:
-            os.chdir(self.config.Read('savePath'))
-        except:
-            os.chdir(os.path.expanduser('~'))
+        # if not self.openOnStartup():
+        #     if self.config.HasEntry('LastFile') \
+        #     and os.path.exists(self.config.Read('LastFile')):
+        #         self.open(self.config.Read('LastFile'))
+        #     else:
+        #         self.newStory()
 
-        if not self.openOnStartup():
-            if self.config.HasEntry('LastFile') \
-            and os.path.exists(self.config.Read('LastFile')):
-                self.open(self.config.Read('LastFile'))
-            else:
-                self.newStory()
+        # always open new blank file
+        self.newHiddenWindow()
+        # self.newStory()
+
+    def newHiddenWindow(self, display=False):
+        frame = StoryFrame(parent = None, app = self)
+        self.hiddenwindows.append(frame)
+        frame.SetPosition((-1000, -1000))
+        frame.SetSizeWH(1, 1)
+        frame.Bind(wx.EVT_CLOSE, lambda e: None) # empty event handlers
+        frame.Bind(wx.EVT_MENU, lambda e: None, id=wx.ID_CLOSE)
+        frame.Bind(wx.EVT_MENU, frame.app.newStory, id=StoryFrame.STORY_NEW_PASSAGE) # override ctrl-N behavior
+        # frame.Bind(wx.EVT_MENU, lambda e: frame.app.exit(), id=wx.ID_EXIT)
+        frame.Show(display) # but off screen and small
 
     def newStory(self, event = None):
         """Opens a new, blank story."""
@@ -62,15 +78,20 @@ class App(wx.App):
     def removeStory(self, story, byMenu = False):
         """Removes a story from our collection. Should be called when it closes."""
         try:
-            self.stories.remove(story)
-            if byMenu:
-                counter = 0
-                for s in self.stories:
-                    if isinstance(s, StoryFrame):
-                        counter = counter + 1
-                if counter == 0:
-                    self.newStory()
-
+            counter = 0
+            for s in self.stories:
+                if isinstance(s, StoryFrame):
+                    counter = counter + 1
+            if counter > 1: # 2+ story left
+                # can safely remove
+                self.stories.remove(s)
+                return (True, None)
+            else: # last story, removing it would be bad
+                for h in self.hiddenwindows:
+                    h.Show(True)
+                self.stories.remove(s)
+                return (True, h)
+                                
         except ValueError:
             pass
 
@@ -142,6 +163,7 @@ class App(wx.App):
         for s in list(self.stories):
             if isinstance(s, StoryFrame):
                 s.Close()
+        self.Exit()
 
     def showPrefs(self, event = None):
         """Shows the preferences dialog."""
@@ -230,7 +252,7 @@ class App(wx.App):
 
     def openGitHub(self, event = None):
         """Opens the GitHub page."""
-        wx.LaunchDefaultBrowser('https://github.com/tweecode/twine')
+        wx.LaunchDefaultBrowser('https://github.com/frozenpandaman/twine')
 
     def loadPrefs(self):
         """Loads user preferences into self.config, setting up defaults if none are set."""
@@ -247,10 +269,10 @@ class App(wx.App):
             'monospaceFontFace' : metrics.face('mono2'),
             'windowedFontSize' : metrics.size('editorBody'),
             'monospaceFontSize' : metrics.size('editorBody'),
-            'flatDesign' : False,
+            'flatDesign' : True,
             'storyFrameToolbar' : True,
             'storyPanelSnap' : False,
-            'fastStoryPanel' : False,
+            'fastStoryPanel' : True,
             'imageArrows' : True,
             'displayArrows' : True,
             'createPassagePrompt' : True,

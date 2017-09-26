@@ -504,10 +504,14 @@ class StoryFrame(wx.Frame):
                 print >> sys.stderr, 'Failed to remove lastest test build:', ex
         self.lastTestBuild = None
 
-        self.app.removeStory(self, byMenu)
+        destroy, h = self.app.removeStory(self, byMenu)
         if event is not None:
             event.Skip()
-        self.Destroy()
+        if destroy:
+            self.Destroy()
+        if h != None:
+            print h
+            h.Hide()
 
     def saveAs(self, event=None):
         """Asks the user to choose a file to save state to, then passes off control to save()."""
