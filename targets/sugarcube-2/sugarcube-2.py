@@ -61,7 +61,7 @@ class Header (header.Header):
 			return ((111, 49, 83), (234, 123, 184))
 		elif passage.isScript() or passage.title == 'StoryScript':
 			return ((89, 66, 28), (226, 170, 80))
-		elif passage.isimpt():
+		elif passage.isImpt():
 			return ((0, 0, 0), (0, 0, 0))
 		elif ('widget' in passage.tags):
 			return ((80, 106, 26), (134, 178, 44))

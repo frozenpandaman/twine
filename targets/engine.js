@@ -79,7 +79,7 @@ function insertElement(a, d, f, c, e) {
 
 function addClickHandler(el, fn) {
     if (el.addEventListener) {
-        el.addEventListener('click', fn); 
+        el.addEventListener('click', fn);
     } else if (el.attachEvent)  {
         el.attachEvent('onclick', fn);
     }
@@ -126,7 +126,7 @@ function scrollWindowTo(e, margin) {
     if (c) {
         scrollWindowInterval = window.setInterval(h, 25);
     }
-    
+
     function h() {
         b += 0.1;
         window.scrollTo(0, d + j * (c * Math.easeInOut(b)));
@@ -265,7 +265,7 @@ function alterCSS(text) {
         temp += e; return '';
     });
     text = temp + text;
-    
+
     // Add images
     return text.replace(new RegExp(Wikifier.imageFormatter.lookahead, "gim"), function(m,p1,p2,p3,src) {
         for (var i = 0; i < imgPassages.length; i++) {
@@ -441,7 +441,7 @@ function History() {
 History.prototype.encodeHistory = function(b, noVars) {
     var ret = ".", vars, type, hist = this.history[b],
         d = this.history[b+1] ? delta(this.history[b+1].variables, hist.variables) : hist.variables;
-    
+
     function vtob(val) {
         try {
             return window.btoa(unescape(encodeURIComponent(JSON.stringify(decompile(val)))));
@@ -449,7 +449,7 @@ History.prototype.encodeHistory = function(b, noVars) {
             return "0";
         }
     }
-    
+
     if (!hist.passage || hist.passage.id == null) {
         return ""
     }
@@ -476,7 +476,7 @@ History.decodeHistory = function(str, prev) {
     var name, splits, variable, c, d,
         ret = { variables: clone(prev.variables) || {} },
         match = /([a-z0-9]+)((?:\$[A-Za-z0-9\+\/=]+,[A-Za-z0-9\+\/=]+)*)((?:\[[A-Za-z0-9\+\/=]+,[A-Za-z0-9\+\/=]+)*)/g.exec(str);
-    
+
     function btov(str) {
         try {
             return recompile(JSON.parse(decodeURIComponent(escape(window.atob(str)))));
@@ -617,7 +617,7 @@ macros.display = {
     parameters: [],
     handler: function (place, macroName, params, parser) {
         var t, j, output, oldDisplayParams, name = parser.fullArgs();
-        
+
         if (macroName != "display") {
             output = macroName;
             // Shorthand displays can have parameters
@@ -659,7 +659,7 @@ macros.display = {
             else {
                 new Wikifier(place, t.processText());
             }
-            this.parameters = oldDisplayParams; 
+            this.parameters = oldDisplayParams;
         }
     }
 };
@@ -742,7 +742,7 @@ macros["if"] = {
             t = 0,
             nesting = 0,
             i = 0;
-        
+
         for (; i < src.length; i++) {
             if ((src.substr(i, 6) == "<<else") && !nesting) {
                 rawConds.push(rawCond);
@@ -862,7 +862,7 @@ macros.forget = {
         }
     }
 };
-            
+
 version.extensions.SilentlyMacro = {
     major: 1,
     minor: 1,
@@ -914,7 +914,7 @@ version.extensions.choiceMacro = {
 macros.choice = {
     callback: function() {
         var i, other, passage = findPassageParent(this);
-        
+
         if (passage) {
             other = passage.querySelectorAll(".choice");
             for (i = 0; i < other.length; i++) {
@@ -933,13 +933,13 @@ macros.choice = {
             return;
         }
         id = (passage && passage.id.replace(/\|[^\]]*$/,''));
-        if (id && (state.history[0].variables["choice clicked"] || 
+        if (id && (state.history[0].variables["choice clicked"] ||
                 (state.history[0].variables["choice clicked"] = {}))[id]) {
-            insertElement(A, "span", null, "disabled", text); 
+            insertElement(A, "span", null, "disabled", text);
         }
         else {
             match = new RegExp(Wikifier.linkFormatter.lookahead).exec(parser.fullMatch());
-            
+
             if (match) {
                 link = Wikifier.linkFormatter.makeLink(A,match,this.callback);
             }
@@ -977,7 +977,7 @@ macros.back = {
                 }
             }
             // Previously, trying to go back more steps than were present in the
-            // history would silently revert to just 1 step. 
+            // history would silently revert to just 1 step.
             // Instead, let's just go back to the start.
             steps = +stepsParam2;
             if(steps >= state.history.length - 1) {
@@ -1039,7 +1039,7 @@ version.extensions.returnMacro = {
 };
 macros["return"] = {
   labeltext: '&#171; return',
-  handler: function(a,b,e) { 
+  handler: function(a,b,e) {
     macros.back.handler.call(this,a,b,e);
   }
 };
@@ -1056,15 +1056,15 @@ macros.checkbox = macros.radio = macros.textinput = {
             q = A.querySelectorAll('input'),
             id = class_ + "|" + ((q && q.length) || 0);
             input = insertElement(null, 'input', id, class_);
-        
+
         input.name=D[0];
         input.type=C.replace('input','');
         // IE 8 support - delay insertion until now
         A.appendChild(input);
-        
+
         if (C == "textinput" && D[1]) {
             match = new RegExp(Wikifier.linkFormatter.lookahead).exec(parser.fullMatch());
-            
+
             if (match) {
                 Wikifier.linkFormatter.makeLink(A,match, macros.button.callback, 'button');
             }
@@ -1110,7 +1110,7 @@ macros.button = {
     handler: function (A, C, D, parser) {
         var link,
             match = new RegExp(Wikifier.linkFormatter.lookahead).exec(parser.fullMatch());
-        
+
         if (match) {
             Wikifier.linkFormatter.makeLink(A, match, this.callback, 'button');
         }
@@ -1256,7 +1256,7 @@ function Tale() {
             c = a[b];
             if (c.getAttribute && (tiddlerTitle = c.getAttribute("tiddler"))) {
                 isImage = (c.getAttribute("tags")+"").indexOf("Twine.image")>-1;
-                if (tiddlerTitle != 'StorySettings' && !isImage) 
+                if (tiddlerTitle != 'StorySettings' && !isImage)
                     tiddlerTitle = rot13(tiddlerTitle);
                 this.passages[tiddlerTitle] = new Passage(tiddlerTitle, c, b+1, !isImage && rot13);
             }
@@ -1321,7 +1321,7 @@ Tale.prototype.canUndo = function() {
 Tale.prototype.identity = function () {
     var meta = document.querySelector("meta[name='identity']"),
         identity = meta ? meta.getAttribute("content") : "story";
-    
+
     return (Tale.prototype.identity = function() {
         return identity;
     })();
@@ -1329,7 +1329,7 @@ Tale.prototype.identity = function () {
 Tale.prototype.forEachStylesheet = function(tags, callback) {
     var passage, i;
     tags = tags || [];
-    
+
     if (typeof callback != "function")
         return;
     for (passage in this.passages) {
@@ -1346,11 +1346,11 @@ Tale.prototype.forEachStylesheet = function(tags, callback) {
 };
 Tale.prototype.setPageElements = function() {
     var storyTitle;
-    
+
     setPageElement("storyTitle", "StoryTitle", this.defaultTitle);
     storyTitle = document.getElementById("storyTitle");
     document.title = this.title = (storyTitle && (storyTitle.textContent || storyTitle.innerText)) || this.defaultTitle;
-    
+
     setPageElement("storySubtitle", "StorySubtitle", "");
     if (tale.has("StoryAuthor")) {
         setPageElement("titleSeparator", null, "\n");
@@ -1489,7 +1489,7 @@ Wikifier.prototype.fullArgs = function (includeName) {
 Wikifier.parse = function (input) {
     var m, re, b = input, found = [],
         g = Wikifier.textPrimitives.unquoted;
-    
+
     function alter(from,to) {
         b = b.replace(new RegExp(from+g,"gim"),to);
         return alter;
@@ -1536,7 +1536,7 @@ Wikifier.formatHelpers = {
                 s[t] = s[t].substr(0, 1).toUpperCase() + s[t].substr(1);
                 return s.join("");
             };
-        
+
         styles.className = "";
         do {
             lookaheadRegExp.lastIndex = w.nextMatch;
@@ -1628,7 +1628,7 @@ Wikifier.formatters = [
         var cellMatch, matched, col = 0,
         currColCount = 1,
         cellRegExp = new RegExp(this.cellPattern, "mg");
-        
+
         do {
             cellRegExp.lastIndex = w.nextMatch;
             cellMatch = cellRegExp.exec(w.source);
@@ -1738,7 +1738,7 @@ Wikifier.formatters = [
             placeStack = [w.output],
             currType = null,
             currLevel = 0;
-            
+
         w.nextMatch = w.matchStart;
         do {
             lookaheadRegExp.lastIndex = w.nextMatch;
@@ -1791,14 +1791,14 @@ Wikifier.formatters = [
     lookahead: "\\[\\[([^\\|]*?)(?:\\|(.*?))?\\](?:\\[(.*?)\])?\\]",
     makeInternalOrExternal: function(out,title,callback,type) {
         if (title && !tale.has(title) && (title.match(Wikifier.urlFormatter.match,"g") || ~title.search(/[\.\\\/#]/)))
-            return Wikifier.createExternalLink(out, title, callback, type); 
+            return Wikifier.createExternalLink(out, title, callback, type);
         else
             return Wikifier.createInternalLink(out, title, callback, type);
     },
-    // This base callback executes the code in a setter 
+    // This base callback executes the code in a setter
     makeCallback: function(code,callback) {
         return function() {
-            macros.set.run(null, Wikifier.parse(code), null, code); 
+            macros.set.run(null, Wikifier.parse(code), null, code);
             typeof callback == "function" && callback.call(this);
         }
     },
@@ -1845,7 +1845,7 @@ Wikifier.formatters = [
         for (j = 0; j < imgPassages.length; j++) {
             if (imgPassages[j].title == imgname) {
                 img.src = imgPassages[j].text;
-                return;
+                return; // fixes image bug on https://twinery.org/wiki/twine_1.4.2_bugs
             }
         }
         img.src = img.src || imgname;
@@ -2001,7 +2001,7 @@ Wikifier.formatters = [
                 e.style[styles[t].style] = styles[t].value;
             }
             if (typeof styles.className == "string") {
-                e.className = styles.className; 
+                e.className = styles.className;
             }
         }
         w.subWikify(e, this.terminator);
@@ -2091,7 +2091,7 @@ Wikifier.formatters = [
                 }
                 // Special data-passage attribute
                 if (passage = e.getAttribute("data-passage")) {
-                    if (tn != "img") { 
+                    if (tn != "img") {
                         addClickHandler(e, Wikifier.linkFunction(Wikifier.parsePassageTitle(passage), e, setter));
                         if (tn == "area" || tn == "a") {
                             e.setAttribute("href", "javascript:;");
@@ -2175,7 +2175,7 @@ Wikifier.createExternalLink = function (place, url, callback, type) {
     if (typeof callback == "function") {
         addClickHandler(el,callback);
     }
-    
+
     if (place) place.appendChild(el);
 
     return el;
@@ -2315,7 +2315,7 @@ window.onbeforeunload = function() {
     }
 };
 /* Error reporting */
-var oldOnError = window.onerror || null, 
+var oldOnError = window.onerror || null,
 softErrorMessage = " You may be able to continue playing, but some parts may not work properly.";
 
 window.onerror = function (msg, a, b, c, error) {
@@ -2341,7 +2341,7 @@ function main() {
     var imgs, scripts, macro, style, i,
         styleText = "",
         passages = document.getElementById("passages");
-    
+
     // Run checks after custom macros are installed
     function sanityCheck(thing) {
         var i, j, s = "NOTE: The " + thing,
@@ -2369,7 +2369,7 @@ function main() {
             }
         }
     }
-    
+
     // Check for basic compatibility
     if (!window.JSON || !document.querySelector) {
         return (passages.innerHTML = "This " + tale.identity() + " requires a newer web browser. Sorry.");
@@ -2378,7 +2378,7 @@ function main() {
     }
     // Initialise Tale
     tale = window.tale = new Tale();
-    
+
     // Check for IE8 image compatibility
     if (~document.documentElement.className.indexOf("lt-ie9")) {
         imgs = tale.lookup("tags", "Twine.image");
@@ -2421,7 +2421,7 @@ function main() {
     }
     styleText = alterCSS(styleText);
     style.styleSheet ? (style.styleSheet.cssText = styleText) : (style.innerHTML = styleText);
-    
+
     state.init();
 }
 

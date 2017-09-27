@@ -40,7 +40,7 @@ class Header(object):
                 "label": "Let the player undo moves",
                 "desc": "In Sugarcane, this enables the browser's back button.\n"
                         "In Jonah, this lets the player click links in previous passages.",
-                "default": "on"
+                "default": "off"
             },{
                 "type": "checkbox",
                 "name": "bookmark",
@@ -48,7 +48,7 @@ class Header(object):
                 "desc": "This enables the Bookmark links in Jonah and Sugarcane.\n"
                         "(If the player can't undo, bookmarks are always disabled.)",
                 "requires": "undo",
-                "default": "on"
+                "default": "off"
             },{
                 "type": "checkbox",
                 "name": "hash",
@@ -75,23 +75,25 @@ class Header(object):
             },{
                 "type": "checkbox",
                 "name": "obfuscate",
-                "label": "Use ROT13 to obscure spoilers in the HTML source code?",
+                "label": "Use ROT13 to obscure spoilers in the HTML source code",
                 "values": ("rot13", "off"),
                 "default": "off"
             },{
                 "type": "checkbox",
                 "name": "jquery",
-                "label": "Include the jQuery script library?",
+                "label": "Include the jQuery script library",
                 "desc": "This enables the jQuery() function and the $() shorthand.\n"
                         "Individual scripts may force this on by containing the text 'requires jQuery'.",
+                        "default": "off"
             },{
                 "type": "checkbox",
                 "name": "modernizr",
-                "label": "Include the Modernizr script library?",
+                "label": "Include the Modernizr script library",
                 "desc": "This adds CSS classes to the <html> element that can be used to write\n"
                         "more compatible CSS or scripts. See http://modernizr.com/docs for details.\n"
                         "Individual scripts/stylesheets may force this on by containing the\n"
                         "text 'requires Modernizr'.",
+                        "default": "off"
             }]
 
     def isEndTag(self, name, tag):
@@ -119,6 +121,8 @@ class Header(object):
             return ((0, 0, 0), (0, 0, 0))
         elif passage.title == "Start":
             return ("#4ca333", "#4bdb24")
+        elif passage.title == "End": # :D
+            return ("#a33333", "#db2424")
 
     def invisiblePassageTags(self):
         """Returns a list of passage tags which, for whatever reason, shouldn't be displayed on the Story Map."""

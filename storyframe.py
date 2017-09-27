@@ -51,6 +51,7 @@ class StoryFrame(wx.Frame):
         self.Bind(wx.EVT_UPDATE_UI, self.updateUI)
 
         # Timer for the auto build file watcher
+
         self.autobuildtimer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.autoBuildTick, self.autobuildtimer)
 
@@ -245,19 +246,6 @@ class StoryFrame(wx.Frame):
 
         self.storyMenu.AppendSeparator()
 
-        self.importImageMenu = wx.Menu()
-        self.importImageMenu.Append(StoryFrame.STORY_IMPORT_IMAGE, 'From &File...')
-        self.Bind(wx.EVT_MENU, self.importImageDialog, id=StoryFrame.STORY_IMPORT_IMAGE)
-        self.importImageMenu.Append(StoryFrame.STORY_IMPORT_IMAGE_URL, 'From Web &URL...')
-        self.Bind(wx.EVT_MENU, self.importImageURLDialog, id=StoryFrame.STORY_IMPORT_IMAGE_URL)
-
-        self.storyMenu.AppendMenu(wx.ID_ANY, 'Import &Image', self.importImageMenu)
-
-        self.storyMenu.Append(StoryFrame.STORY_IMPORT_FONT, 'Import &Font...')
-        self.Bind(wx.EVT_MENU, self.importFontDialog, id=StoryFrame.STORY_IMPORT_FONT)
-
-        self.storyMenu.AppendSeparator()
-
         # Story Settings submenu
 
         self.storySettingsMenu = wx.Menu()
@@ -296,6 +284,19 @@ class StoryFrame(wx.Frame):
                   id=StoryFrame.STORYSETTINGS_HELP)
 
         self.storyMenu.AppendMenu(wx.ID_ANY, 'Special Passages', self.storySettingsMenu)
+
+        self.storyMenu.AppendSeparator()
+
+        self.importImageMenu = wx.Menu()
+        self.importImageMenu.Append(StoryFrame.STORY_IMPORT_IMAGE, 'From &File...')
+        self.Bind(wx.EVT_MENU, self.importImageDialog, id=StoryFrame.STORY_IMPORT_IMAGE)
+        self.importImageMenu.Append(StoryFrame.STORY_IMPORT_IMAGE_URL, 'From Web &URL...')
+        self.Bind(wx.EVT_MENU, self.importImageURLDialog, id=StoryFrame.STORY_IMPORT_IMAGE_URL)
+
+        self.storyMenu.AppendMenu(wx.ID_ANY, 'Import &Image', self.importImageMenu)
+
+        self.storyMenu.Append(StoryFrame.STORY_IMPORT_FONT, 'Import &Font...')
+        self.Bind(wx.EVT_MENU, self.importFontDialog, id=StoryFrame.STORY_IMPORT_FONT)
 
         self.storyMenu.AppendSeparator()
 
@@ -403,7 +404,7 @@ class StoryFrame(wx.Frame):
             (wx.ACCEL_CTRL, wx.WXK_RETURN, StoryFrame.STORY_EDIT_FULLSCREEN) \
             ]))
 
-        iconPath = self.app.iconsPath
+        iconPath = self.app.toolbarIconsPath
 
         self.toolbar = self.CreateToolBar(style=wx.TB_FLAT | wx.TB_NODIVIDER)
         self.toolbar.SetToolBitmapSize((StoryFrame.TOOLBAR_ICON_SIZE, StoryFrame.TOOLBAR_ICON_SIZE))
@@ -425,15 +426,23 @@ class StoryFrame(wx.Frame):
                                   shortHelp=StoryFrame.ZOOM_OUT_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('out'), id=wx.ID_ZOOM_OUT)
 
-        # self.toolbar.AddLabelTool(wx.ID_ZOOM_FIT, 'Zoom to Fit', \
-        #                           wx.Bitmap(iconPath + 'zoomfit.png'), \
-        #                           shortHelp=StoryFrame.ZOOM_FIT_TOOLTIP)
-        # self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('fit'), id=wx.ID_ZOOM_FIT)
+        self.toolbar.AddLabelTool(wx.ID_ZOOM_100, 'Zoom to 100%', \
+                                  wx.Bitmap(iconPath + 'zoom1.png'), \
+                                  shortHelp=StoryFrame.ZOOM_ONE_TOOLTIP)
+        self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom(1.0), id=wx.ID_ZOOM_100)
 
-        # self.toolbar.AddLabelTool(wx.ID_ZOOM_100, 'Zoom to 100%', \
-        #                           wx.Bitmap(iconPath + 'zoom1.png'), \
-        #                           shortHelp=StoryFrame.ZOOM_ONE_TOOLTIP)
-        # self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom(1.0), id=wx.ID_ZOOM_100)
+        self.toolbar.AddLabelTool(wx.ID_ZOOM_FIT, 'Zoom to Fit', \
+                                  wx.Bitmap(iconPath + 'zoomfit.png'), \
+                                  shortHelp=StoryFrame.ZOOM_FIT_TOOLTIP)
+        self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('fit'), id=wx.ID_ZOOM_FIT)
+
+        # self.toolbar.AddSeparator()
+
+        # self.toolbar.AddLabelTool(wx.ID_MAXIMIZE_FRAME, 'Full Screen', \
+        #                           wx.Bitmap(iconPath + 'fullscreen.png'), \
+        #                           shortHelp=StoryFrame.MAXIMIZE_EDITOR_TOOLTIP)
+        # if not self.IsFullScreen():
+        #     self.Bind(wx.EVT_TOOL, lambda e: self.ShowFullScreen(True), id=wx.ID_MAXIMIZE_FRAME)
 
         self.SetIcon(self.app.icon)
 
@@ -808,10 +817,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
 """
 
         elif title == 'StoryIncludes':
-            return """List the file paths of any .twee or .tws files that should be merged into this story when it's built.
-
-You can also include URLs of .tws and .twee files, too.
-"""
+            return """List the file paths or URLs of any .twee or .tws files that should be merged into this story when it's built."""
 
         else:
             return ""
@@ -1163,9 +1169,9 @@ You can also include URLs of .tws and .twee files, too.
             bits = os.path.splitext(self.saveDestination)
             self.title = os.path.basename(bits[0])
 
-        percent = str(int(round(self.storyPanel.scale * 100)))
+        # percent = str(int(round(self.storyPanel.scale * 100)))
         dirtyText = '' if not self.dirty else ' *'
-        titleText = self.title + dirtyText + ' (' + percent + '%) ' + '- ' + self.app.NAME + ' ' + version.versionString
+        titleText = self.title + dirtyText + ' - ' + self.app.NAME + ' ' + version.versionString
         if not self.GetTitle() == titleText:
             self.SetTitle(titleText)
 
@@ -1316,11 +1322,12 @@ You can also include URLs of .tws and .twee files, too.
     ZOOM_OUT_TOOLTIP = 'Zoom out'
     ZOOM_FIT_TOOLTIP = 'Zoom so all passages are visible onscreen'
     ZOOM_ONE_TOOLTIP = 'Zoom to 100%'
+    MAXIMIZE_EDITOR_TOOLTIP = 'Maximize editor'
 
     # size constants
 
     DEFAULT_SIZE = (800, 600)
-    TOOLBAR_ICON_SIZE = 32
+    TOOLBAR_ICON_SIZE = 22
 
     # misc stuff
 

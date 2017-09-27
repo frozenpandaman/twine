@@ -1039,30 +1039,30 @@ class StoryPanel(wx.ScrolledWindow):
 
     INSET = (10, 10)
     ARROWHEAD_THRESHOLD = 0.5   # won't be drawn below this zoom level
-    FIRST_CSS = """/* Your story will use the CSS in this passage to style the page.
-Give this passage more tags, and it will only affect passages with those tags.
-Example selectors: */
-
-body {
-\t/* This affects the entire page */
-\t
-\t
-}
-.passage {
-\t/* This only affects passages */
-\t
-\t
-}
-.passage a {
-\t/* This affects passage links */
-\t
-\t
-}
-.passage a:hover {
-\t/* This affects links while the cursor is over them */
-\t
-\t
-}"""
+    FIRST_CSS = ""
+    # """/* Your story will use the CSS in this passage to style the page.
+    # Give this passage more tags, and it will only affect passages with those tags.
+    # Example selectors: */
+    # body {
+    # \t/* This affects the entire page */
+    # \t
+    # \t
+    # }
+    # .passage {
+    # \t/* This only affects passages */
+    # \t
+    # \t
+    # }
+    # .passage a {
+    # \t/* This affects passage links */
+    # \t
+    # \t
+    # }
+    # .passage a:hover {
+    # \t/* This affects links while the cursor is over them */
+    # \t
+    # \t
+    # }"""
     BACKGROUND_COLOR = '#555753'
     FLAT_BG_COLOR = '#c6c6c6'
     MARQUEE_ALPHA = 32 # out of 256

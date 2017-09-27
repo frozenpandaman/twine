@@ -40,7 +40,6 @@ class App(wx.App):
         except:
             pass
 
-
         # don't restore save location
         # try:
         #     os.chdir(self.config.Read('savePath'))
@@ -55,8 +54,7 @@ class App(wx.App):
         #         self.newStory()
 
         # always open new blank file
-        self.newHiddenWindow()
-        # self.newStory()
+        self.newStory()
 
     def newHiddenWindow(self, display=False):
         frame = StoryFrame(parent = None, app = self)
@@ -82,16 +80,21 @@ class App(wx.App):
             for s in self.stories:
                 if isinstance(s, StoryFrame):
                     counter = counter + 1
-            if counter > 1: # 2+ story left
-                # can safely remove
-                self.stories.remove(s)
-                return (True, None)
-            else: # last story, removing it would be bad
-                for h in self.hiddenwindows:
+                if counter > 1: # 2+ story left
+                    # can safely remove
+                    self.stories.remove(s)
+                    return (True, None)
+                else: # last story, removing it would be bad
+                    shouldcreate = True
+                    if self.hiddenwindows: # not empty list
+                        h = self.hiddenwindows[0]
+                    else:
+                        self.newHiddenWindow()
+                        h = self.hiddenwindows[0]
                     h.Show(True)
-                self.stories.remove(s)
-                return (True, h)
-                                
+                    self.stories.remove(s)
+                    return (True, h)
+
         except ValueError:
             pass
 
@@ -320,6 +323,7 @@ class App(wx.App):
 
         scriptPath += os.sep
         self.iconsPath = scriptPath + 'icons' + os.sep
+        self.toolbarIconsPath = scriptPath + 'icons' + os.sep + 'small' + os.sep
         self.builtinTargetsPath = scriptPath + 'targets' + os.sep
 
         if sys.platform == "darwin":

@@ -781,7 +781,7 @@ class PassageFrame(wx.Frame):
 
     DEFAULT_SIZE = (550, 600)
     TITLE_LABEL = 'Title'
-    TAGS_LABEL = 'Tags (separate with spaces)'
+    TAGS_LABEL = 'Tags'
 
     # menu constants (not defined by wx)
 

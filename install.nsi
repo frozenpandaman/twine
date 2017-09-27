@@ -2,9 +2,9 @@
 
 ; This also packages vcredist_x86.exe v9.0.30729.5677 (which includes the MSVCR90.dll v9.0.30729.6161)
 ; It can be downloaded from: http://www.microsoft.com/en-us/download/details.aspx?id=26368
-; This only works for unicode Python 2.7.3/wxPython2.8. 
+; This only works for unicode Python 2.7.3/wxPython2.8.
 ; Verify which version of MSVCR90.dll you need using dependancy walker on your Python2x.exe
-; Place the vcredist_x86.exe file into the ./build directory and this install does the rest 
+; Place the vcredist_x86.exe file into the ./build directory and this install does the rest
 
 Name "Twine 1.4.3"
 OutFile "dist\twine-1.4.3-win.exe"
