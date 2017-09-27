@@ -44,8 +44,8 @@ class PassageWidget(object):
 
     def getSize(self):
         """Returns this instance's logical size."""
-        if self.passage.isAnnotation():
-            return (PassageWidget.SIZE+self.parent.GRID_SPACING, PassageWidget.SIZE+self.parent.GRID_SPACING)
+        # if self.passage.isAnnotation():
+        #     return (PassageWidget.SIZE+self.parent.GRID_SPACING, PassageWidget.SIZE+self.parent.GRID_SPACING)
         return (PassageWidget.SIZE, PassageWidget.SIZE)
 
     def getCenter(self):
@@ -121,7 +121,7 @@ class PassageWidget(object):
             self.pos[0] += self.parent.GRID_SPACING
             rightEdge = self.pos[0] + PassageWidget.SIZE
             maxWidth = self.parent.toLogical((self.parent.GetSize().width - self.parent.INSET[0], -1), \
-                                             scaleOnly = True)[0]
+                                            scaleOnly = True)[0]
             if rightEdge > maxWidth:
                 self.pos[0] = 10
                 self.pos[1] += self.parent.GRID_SPACING
@@ -283,6 +283,9 @@ class PassageWidget(object):
     def intersectsAny(self, dragging = False):
         """Returns whether this widget intersects any other in the same StoryPanel."""
 
+        if dragging:
+            return False
+
         #Enforce positive coordinates
         if not 'Twine.hide' in self.passage.tags:
             if self.pos[0] < 0 or self.pos[1] < 0:
@@ -292,15 +295,18 @@ class PassageWidget(object):
 
         for widget in self.parent.notDraggingWidgets if dragging else self.parent.widgetDict.itervalues():
             if widget != self and self.intersects(widget):
-                return True
+                return (True, widget)
 
         return False
 
-    def intersects(self, other):
+    def intersects(self, other, force=False):
         """
         Returns whether this widget intersects another widget or wx.Rect.
         This uses logical coordinates, so you can do this without actually moving the widget onscreen.
         """
+        if force:
+            return False
+
         selfRect = self.getLogicalRect()
 
         if isinstance(other, PassageWidget):
@@ -354,11 +360,11 @@ class PassageWidget(object):
                 if widget:
                     ret.append(widget)
 
-            if self.passage.isStylesheet():
+            if self.passage.isStylesheet() or self.passage.isImpt():
                 for t in self.passage.tags:
                     if t not in tiddlywiki.TiddlyWiki.INFO_TAGS:
                         for otherWidget in self.parent.taggedWidgets(t):
-                            if not otherWidget.dimmed and not otherWidget.passage.isStylesheet():
+                            if not otherWidget.dimmed and not otherWidget.passage.isStylesheet() and not otherWidget.passage.isImpt():
                                 ret.append(otherWidget)
         return ret
 
@@ -445,6 +451,8 @@ class PassageWidget(object):
         # Use default colours
         if self.passage.isAnnotation():
             ind = 'annotation'
+        if self.passage.isImpt():
+            ind = 'impt'
         elif self.passage.isImage():
             ind = 'imageTitleBar'
         elif any(t.startswith('Twine.') for t in self.passage.tags):
@@ -828,6 +836,7 @@ class PassageWidget(object):
                'bodyStart': (255, 255, 255), \
                'bodyEnd': (212, 212, 212), \
                'annotation': (85, 87, 83), \
+               'impt': (0, 0, 0), \
                'endTitleBar': (16, 51, 96), \
                'titleBar': (52, 101, 164), \
                'imageTitleBar': (8, 138, 133), \
@@ -846,6 +855,7 @@ class PassageWidget(object):
                'bodyStart':  (255, 255, 255),
                'bodyEnd':  (255, 255, 255),
                'annotation': (212, 212, 212),
+               'impt': (0, 0, 0),
                'endTitleBar': (36, 54, 219),
                'titleBar': (36, 115, 219),
                'imageTitleBar': (36, 219, 213),

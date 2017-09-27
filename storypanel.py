@@ -539,12 +539,12 @@ class StoryPanel(wx.ScrolledWindow):
 
             # if there any overlaps, then warn the user with a bad drag cursor
 
-            goodDrag = True
+            # goodDrag = True
 
-            for widget in self.draggingWidgets:
-                if widget.intersectsAny(dragging = True):
-                    goodDrag = False
-                    break
+            # for widget in self.draggingWidgets:
+            #     if widget.intersectsAny(dragging = True):
+            #         goodDrag = False
+            #         break
 
             # in fast drawing, we dim passages
             # to indicate no connectors should be drawn for them
@@ -554,10 +554,11 @@ class StoryPanel(wx.ScrolledWindow):
             # to indicate you're not allowed to drag there
 
             for widget in self.draggingWidgets:
-                widget.setDimmed(self.app.config.ReadBool('fastStoryPanel') or not goodDrag)
+                widget.setDimmed(self.app.config.ReadBool('fastStoryPanel'))
 
-            if goodDrag: self.SetCursor(self.dragCursor)
-            else: self.SetCursor(self.badDragCursor)
+            # if goodDrag:
+            self.SetCursor(self.dragCursor)
+            # else: self.SetCursor(self.badDragCursor)
 
             # scroll in response to the mouse,
             # and shift passages accordingly
@@ -577,28 +578,31 @@ class StoryPanel(wx.ScrolledWindow):
 
             self.Refresh(True, dirtyRect)
         else:
-
             if self.actuallyDragged:
                 # is this a bad drag?
 
-                goodDrag = True
+                # for widget in self.draggingWidgets:
+                #     if widget.intersectsAny(dragging = True):
+                #         goodDrag = False
+                #         break
 
+                # if goodDrag:
                 for widget in self.draggingWidgets:
-                    if widget.intersectsAny(dragging = True):
-                        goodDrag = False
-                        break
-
-                if goodDrag:
-                    for widget in self.draggingWidgets:
-                        self.snapWidget(widget)
-                        widget.setDimmed(False)
-                    if widget.pos != widget.predragPos:
-                        self.parent.setDirty(True, action = 'Move')
-                    self.resize()
-                else:
-                    for widget in self.draggingWidgets:
-                        widget.pos = widget.predragPos
-                        widget.setDimmed(False)
+                    # self.snapWidget(widget) # allow overlapping
+                    if widget.intersectsAny():
+                        try:
+                            hit = widget.intersectsAny()[1] # overlapping with
+                            # layering stuff?
+                        except:
+                            pass
+                    widget.setDimmed(False)
+                if widget.pos != widget.predragPos:
+                    self.parent.setDirty(True, action = 'Move')
+                self.resize()
+                # else:
+                #     for widget in self.draggingWidgets:
+                #         widget.pos = widget.predragPos
+                #         widget.setDimmed(False)
 
                 self.Refresh()
 
@@ -1095,9 +1099,9 @@ class StoryPanelContext(wx.Menu):
         self.AppendItem(newPassage)
         self.Bind(wx.EVT_MENU, lambda e: self.newWidget(e, tags = ['script']), id = newPassage.GetId())
 
-        newPassage = wx.MenuItem(self, wx.NewId(), 'New Annotation Here')
+        newPassage = wx.MenuItem(self, wx.NewId(), 'New Note Here')
         self.AppendItem(newPassage)
-        self.Bind(wx.EVT_MENU, lambda e: self.newWidget(e, tags = ['annotation']), id = newPassage.GetId())
+        self.Bind(wx.EVT_MENU, lambda e: self.newWidget(e, tags = ['note']), id = newPassage.GetId())
 
     def getPos(self):
         pos = self.pos

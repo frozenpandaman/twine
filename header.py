@@ -115,6 +115,8 @@ class Header(object):
             return ((111, 49, 83),(234, 123, 184))
         elif passage.isInfoPassage():
             return ((28, 89, 74), (41, 214, 113))
+        elif passage.isImpt():
+            return ((0, 0, 0), (0, 0, 0))
         elif passage.title == "Start":
             return ("#4ca333", "#4bdb24")
 

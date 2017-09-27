@@ -230,8 +230,8 @@ class StoryFrame(wx.Frame):
         self.newPassageMenu.Append(StoryFrame.STORY_NEW_SCRIPT, '&Script')
         self.Bind(wx.EVT_MENU, lambda e: self.storyPanel.newWidget(tags=['script']), id=StoryFrame.STORY_NEW_SCRIPT)
 
-        self.newPassageMenu.Append(StoryFrame.STORY_NEW_ANNOTATION, '&Annotation')
-        self.Bind(wx.EVT_MENU, lambda e: self.storyPanel.newWidget(tags=['annotation']),
+        self.newPassageMenu.Append(StoryFrame.STORY_NEW_ANNOTATION, '&Note')
+        self.Bind(wx.EVT_MENU, lambda e: self.storyPanel.newWidget(tags=['note']),
                   id=StoryFrame.STORY_NEW_ANNOTATION)
 
         self.storyMenu.AppendMenu(wx.ID_ANY, 'New', self.newPassageMenu)
@@ -425,15 +425,15 @@ class StoryFrame(wx.Frame):
                                   shortHelp=StoryFrame.ZOOM_OUT_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('out'), id=wx.ID_ZOOM_OUT)
 
-        self.toolbar.AddLabelTool(wx.ID_ZOOM_FIT, 'Zoom to Fit', \
-                                  wx.Bitmap(iconPath + 'zoomfit.png'), \
-                                  shortHelp=StoryFrame.ZOOM_FIT_TOOLTIP)
-        self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('fit'), id=wx.ID_ZOOM_FIT)
+        # self.toolbar.AddLabelTool(wx.ID_ZOOM_FIT, 'Zoom to Fit', \
+        #                           wx.Bitmap(iconPath + 'zoomfit.png'), \
+        #                           shortHelp=StoryFrame.ZOOM_FIT_TOOLTIP)
+        # self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('fit'), id=wx.ID_ZOOM_FIT)
 
-        self.toolbar.AddLabelTool(wx.ID_ZOOM_100, 'Zoom to 100%', \
-                                  wx.Bitmap(iconPath + 'zoom1.png'), \
-                                  shortHelp=StoryFrame.ZOOM_ONE_TOOLTIP)
-        self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom(1.0), id=wx.ID_ZOOM_100)
+        # self.toolbar.AddLabelTool(wx.ID_ZOOM_100, 'Zoom to 100%', \
+        #                           wx.Bitmap(iconPath + 'zoom1.png'), \
+        #                           shortHelp=StoryFrame.ZOOM_ONE_TOOLTIP)
+        # self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom(1.0), id=wx.ID_ZOOM_100)
 
         self.SetIcon(self.app.icon)
 
@@ -510,7 +510,6 @@ class StoryFrame(wx.Frame):
         if destroy:
             self.Destroy()
         if h != None:
-            print h
             h.Hide()
 
     def saveAs(self, event=None):
