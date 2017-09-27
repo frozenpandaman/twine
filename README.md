@@ -6,6 +6,15 @@ A visual tool for creating interactive stories for the Web, based on the [Twee](
 
 See [https://twinery.org/](https://twinery.org/) for more.
 
+## Changes from Twine 1.4.2
+
+ * Fix file opening & closing
+ * Allow passages to overlap (messy)
+ * Fix *some* 1.4.2 [bugs](https://twinery.org/wiki/twine_1.4.2_bugs) (already in repo upon fork)
+ * Collapse toolbar
+ * Fix size of annotation/note passages
+ * Include [SugarCube](https://www.motoslave.net/sugarcube/2/) story format
+
 ## Development environment setup
 
 These are specific setup instructions for my MacBook Pro, running Mac OS X 10.11 (El Capitan). The original readme and setup instructions can be found at [https://github.com/tweecode/twine](https://github.com/tweecode/twine).
