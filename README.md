@@ -2,9 +2,7 @@
 
 ## Introduction
 
-A visual tool for creating interactive stories for the Web, based on the [Twee](https://github.com/tweecode/twee) story engine.
-
-See [https://twinery.org/](https://twinery.org/) for more.
+A visual tool for creating interactive stories for the Web, based on the [Twee](https://github.com/tweecode/twee) story engine. See [https://twinery.org/](https://twinery.org/) for more.
 
 ## Changes from Twine 1.4.2
 
@@ -13,7 +11,7 @@ See [https://twinery.org/](https://twinery.org/) for more.
  * Fix *some* 1.4.2 [bugs](https://twinery.org/wiki/twine_1.4.2_bugs) (already in repo upon fork)
  * Collapse toolbar
  * Fix size of annotation/note passages
- * Include [SugarCube](https://www.motoslave.net/sugarcube/2/) story format
+ * Include [SugarCube](https://www.motoslave.net/sugarcube/2/#downloads) story format
 
 ## Development environment setup
 
@@ -21,9 +19,8 @@ These are specific setup instructions for my MacBook Pro, running Mac OS X 10.11
 
 Notes:
  - The most recent version of py2app (0.14) is fine; we don't need 0.6.4 specifically.
- - We're not using virtualenv.
+ - We're not using virtualenv (as the original repo's instructions do).
  - Removed Windows stuff like the py2exe dependency and `buildexe.py`.
- - I've added the SugarCube-2 story format into `templates/`. The original download page can be found [here](https://www.motoslave.net/sugarcube/2/#downloads).
 
 1. Setup:
    ```
@@ -36,4 +33,6 @@ Notes:
 
 3. Run `python app.py` to launch. Build with `python buildapp.py py2app`.
 
-4. Make sure to add [fixes for bugs](https://twinery.org/wiki/twine_1.4.2_bugs) in projects you create.
+## Contact
+
+[@frozenpandaman](https://twitter.com/frozenpandaman) on Twitter
