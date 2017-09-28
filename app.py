@@ -80,7 +80,7 @@ class App(wx.App):
             for s in self.stories:
                 if isinstance(s, StoryFrame):
                     counter = counter + 1
-                if counter > 1: # 2+ story left
+                if counter > 1: # 2+ stories left
                     # can safely remove
                     self.stories.remove(s)
                     return (True, None)
@@ -190,25 +190,27 @@ class App(wx.App):
     def removeRecentFile(self, story, index):
         """Remove all missing files from the recent files history and update the menus."""
 
-        def removeRecentFile_do(story, index, showdialog = True):
+        def removeRecentFile_do(story, index):
             filename = story.recentFiles.GetHistoryFile(index)
             story.recentFiles.RemoveFileFromHistory(index)
             story.recentFiles.Save(self.config)
-            if showdialog:
-                text = 'The file ' + filename + ' no longer exists.\n' + \
-                       'This file has been removed from the Recent Files list.'
-                dlg = wx.MessageDialog(None, text, 'Information', wx.OK | wx.ICON_INFORMATION)
-                dlg.ShowModal()
-                dlg.Destroy()
-                return True
-            else:
-                return False
-        showdialog = True
+            # silence error
+            # if showdialog:
+            #     text = 'The file ' + filename + ' no longer exists.\n' + \
+            #            'This file has been removed from the Recent Files list.'
+            #     dlg = wx.MessageDialog(None, text, 'Information', wx.OK | wx.ICON_INFORMATION)
+            #     dlg.ShowModal()
+            #     dlg.Destroy()
+            #     return True
+            # else:
+            #     return False
+
+        # showdialog = True
         for s in self.stories:
             if s != story and isinstance(s, StoryFrame):
-                removeRecentFile_do(s, index, showdialog)
-                showdialog = False
-        removeRecentFile_do(story, index, showdialog)
+                removeRecentFile_do(s, index)
+                # showdialog = False
+        removeRecentFile_do(story, index)
 
     def verifyRecentFiles(self, story):
         done = False
@@ -243,15 +245,19 @@ class App(wx.App):
 
     def storyFormatHelp(self, event = None):
         """Opens the online manual to the section on story formats."""
-        wx.LaunchDefaultBrowser('http://twinery.org/wiki/story_format')
+        wx.LaunchDefaultBrowser('https://twinery.org/wiki/story_format')
 
     def openForum(self, event = None):
         """Opens the forum."""
-        wx.LaunchDefaultBrowser('http://twinery.org/forum/')
+        wx.LaunchDefaultBrowser('https://twinery.org/forum/')
+
+    def openQA(self, event = None):
+        """Opens the Question & Answer site."""
+        wx.LaunchDefaultBrowser('https://twinery.org/questions/')
 
     def openDocs(self, event = None):
         """Opens the online manual."""
-        wx.LaunchDefaultBrowser('http://twinery.org/wiki/')
+        wx.LaunchDefaultBrowser('https://twinery.org/wiki/')
 
     def openGitHub(self, event = None):
         """Opens the GitHub page."""
@@ -275,6 +281,7 @@ class App(wx.App):
             'flatDesign' : True,
             'storyFrameToolbar' : True,
             'storyPanelSnap' : False,
+            'storyPanelOverlap' : False,
             'fastStoryPanel' : True,
             'imageArrows' : True,
             'displayArrows' : True,
@@ -310,16 +317,25 @@ class App(wx.App):
 
     def MacReopenApp(self):
         """OS X support"""
-        self.GetTopWindow().Raise()
+        if len(self.stories) == 0:
+            self.newStory()
+            self.stories[0].Raise()
+        else:
+            if len(self.stories) == 1:
+                topwindow = self.GetTopWindow()
+                if len(self.hiddenwindows) != 0:
+                    if topwindow == self.hiddenwindows[0]:
+                        topwindow = self.stories[0]
+                    topwindow.Raise()
 
     def determinePaths(self):
         """Determine the paths to relevant files used by application"""
         scriptPath = os.path.dirname(os.path.realpath(sys.argv[0]))
-        if sys.platform == 'win32':
-            # Windows py2exe'd apps add an extraneous library.zip at the end
-            scriptPath = re.sub('\\\\\w*.zip', '', scriptPath)
-        elif sys.platform == "darwin":
+        if sys.platform == "darwin":
             scriptPath = re.sub('MacOS\/.*', '', scriptPath)
+        # elif sys.platform == 'win32':
+        #     # Windows py2exe'd apps add an extraneous library.zip at the end
+        #     scriptPath = re.sub('\\\\\w*.zip', '', scriptPath)
 
         scriptPath += os.sep
         self.iconsPath = scriptPath + 'icons' + os.sep

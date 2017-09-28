@@ -29,6 +29,7 @@ class StoryPanel(wx.ScrolledWindow):
         # inner state
 
         self.snapping = self.app.config.ReadBool('storyPanelSnap')
+        self.overlapping = self.app.config.ReadBool('storyPanelOverlap')
         self.widgetDict = dict()
         self.visibleWidgets = None
         self.includedPassages = set()
@@ -146,6 +147,13 @@ class StoryPanel(wx.ScrolledWindow):
         """Toggles whether snapping is on."""
         self.snapping = self.snapping is not True
         self.app.config.WriteBool('storyPanelSnap', self.snapping)
+
+    def toggleOverlapping(self):
+        """Toggles whether passages may overlap."""
+        self.overlapping = self.overlapping is not True
+        self.app.config.WriteBool('storyPanelOverlap', self.overlapping)
+        # if not self.overlapping:
+        #     self.cleanup()
 
     def copyWidgets(self):
         """Copies selected widgets into the clipboard."""
@@ -588,7 +596,8 @@ class StoryPanel(wx.ScrolledWindow):
 
                 # if goodDrag:
                 for widget in self.draggingWidgets:
-                    # self.snapWidget(widget) # allow overlapping
+                    if not self.overlapping:
+                        self.snapWidget(widget) # comment out to allow overlapping
                     if widget.intersectsAny():
                         try:
                             hit = widget.intersectsAny()[1] # overlapping with
@@ -596,14 +605,18 @@ class StoryPanel(wx.ScrolledWindow):
                         except:
                             pass
                     widget.setDimmed(False)
-                if widget.pos != widget.predragPos:
-                    self.parent.setDirty(True, action = 'Move')
-                self.resize()
-                # else:
-                #     for widget in self.draggingWidgets:
-                #         widget.pos = widget.predragPos
-                #         widget.setDimmed(False)
-
+                if self.overlapping: # if overlapping enabled
+                    if widget.pos != widget.predragPos:
+                        self.parent.setDirty(True, action = 'Move')
+                    self.resize()
+                else: # if overlapping disabled
+                    if widget.pos != widget.predragPos:
+                        self.parent.setDirty(True, action = 'Move')
+                        self.resize()
+                    else:
+                        for widget in self.draggingWidgets:
+                            widget.pos = widget.predragPos
+                            widget.setDimmed(False)
                 self.Refresh()
 
             else:

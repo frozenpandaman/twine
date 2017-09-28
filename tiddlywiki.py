@@ -315,10 +315,10 @@ class TiddlyWiki(object):
     INFO_PASSAGES = FORMATTED_INFO_PASSAGES | UNFORMATTED_INFO_PASSAGES
     SPECIAL_TAGS = frozenset(['Twine.image'])
     NOINCLUDE_TAGS = frozenset(['Twine.private', 'Twine.system'])
-    INFO_TAGS = frozenset(['script', 'stylesheet', 'impt', 'note']) | SPECIAL_TAGS | NOINCLUDE_TAGS
+    INFO_TAGS = frozenset(['script', 'stylesheet', 'annotation', 'note']) | SPECIAL_TAGS | NOINCLUDE_TAGS
 
 
-class Tiddler: # pylint: disable=old-style-class
+class Tiddler:
     """A single tiddler in a TiddlyWiki.
 
     Note: Converting this to a new-style class breaks pickling of new TWS files on old Twine releases.
@@ -489,10 +489,10 @@ class Tiddler: # pylint: disable=old-style-class
         return 'Twine.image' in self.tags
 
     def isAnnotation(self):
-        return 'note' in self.tags
+        return 'annotation' in self.tags
 
-    def isImpt(self):
-        return 'impt' in self.tags
+    def isNote(self):
+        return 'note' in self.tags
 
     def isStylesheet(self):
         return 'stylesheet' in self.tags

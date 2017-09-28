@@ -199,6 +199,9 @@ class StoryFrame(wx.Frame):
 
         viewMenu.AppendSeparator()
 
+        viewMenu.Append(StoryFrame.VIEW_OVERLAP, 'Allow &Overlapping', kind=wx.ITEM_CHECK)
+        self.Bind(wx.EVT_MENU, lambda e: self.storyPanel.toggleOverlapping(), id=StoryFrame.VIEW_OVERLAP)
+
         viewMenu.Append(StoryFrame.VIEW_SNAP, 'Snap to &Grid', kind=wx.ITEM_CHECK)
         self.Bind(wx.EVT_MENU, lambda e: self.storyPanel.toggleSnapping(), id=StoryFrame.VIEW_SNAP)
 
@@ -370,10 +373,13 @@ class StoryFrame(wx.Frame):
         helpMenu.Append(StoryFrame.HELP_MANUAL, 'Twine &Wiki')
         self.Bind(wx.EVT_MENU, self.app.openDocs, id=StoryFrame.HELP_MANUAL)
 
-        helpMenu.Append(StoryFrame.HELP_FORUM, 'Twine &Forum')
+        helpMenu.Append(StoryFrame.HELP_FORUM, 'Twine &Forum (old)')
         self.Bind(wx.EVT_MENU, self.app.openForum, id=StoryFrame.HELP_FORUM)
 
-        helpMenu.Append(StoryFrame.HELP_GITHUB, 'Twine\'s Source Code on &GitHub')
+        helpMenu.Append(StoryFrame.HELP_QA, 'Twine &Q&&A')
+        self.Bind(wx.EVT_MENU, self.app.openQA, id=StoryFrame.HELP_QA)
+
+        helpMenu.Append(StoryFrame.HELP_GITHUB, 'Twine Source Code on &GitHub')
         self.Bind(wx.EVT_MENU, self.app.openGitHub, id=StoryFrame.HELP_GITHUB)
 
         helpMenu.AppendSeparator()
@@ -966,7 +972,6 @@ Any macros in this passage will be run before the Start passage (or any passage 
     def readIncludes(self, lines, callback, silent=False):
         """
         Examines all of the source files included via StoryIncludes, and performs a callback on each passage found.
-
         callback is a function that takes 1 Tiddler object.
         """
         twinedocdir = self.getLocalDir()
@@ -1200,7 +1205,8 @@ Any macros in this passage will be run before the Start passage (or any passage 
 
         # View menu
         self.menus.FindItemById(StoryFrame.VIEW_TOOLBAR).Check(self.showToolbar)
-        self.menus.FindItemById(StoryFrame.VIEW_SNAP).Check(self.storyPanel.snapping)
+        # self.menus.FindItemById(StoryFrame.VIEW_SNAP).Check(self.storyPanel.snapping)
+        # self.menus.FindItemById(StoryFrame.VIEW_OVERLAP).Check(self.storyPanel.overlapping)
 
         # Story menu, Build menu
 
@@ -1300,6 +1306,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
     VIEW_SNAP = 301
     VIEW_CLEANUP = 302
     VIEW_TOOLBAR = 303
+    VIEW_OVERLAP = 304
 
     [STORY_NEW_PASSAGE, STORY_NEW_SCRIPT, STORY_NEW_STYLESHEET, STORY_NEW_ANNOTATION, STORY_EDIT_FULLSCREEN,
      STORY_STATS, STORY_METADATA, \
@@ -1313,7 +1320,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
     [BUILD_VERIFY, BUILD_TEST, BUILD_TEST_HERE, BUILD_BUILD, BUILD_REBUILD, BUILD_VIEW_LAST, BUILD_AUTO_BUILD] = range(
         601, 608)
 
-    [HELP_MANUAL, HELP_GROUP, HELP_GITHUB, HELP_FORUM] = range(701, 705)
+    [HELP_MANUAL, HELP_GROUP, HELP_GITHUB, HELP_FORUM, HELP_QA] = range(701, 706)
 
     # tooltip labels
 

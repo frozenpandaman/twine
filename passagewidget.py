@@ -360,11 +360,11 @@ class PassageWidget(object):
                 if widget:
                     ret.append(widget)
 
-            if self.passage.isStylesheet() or self.passage.isImpt():
+            if self.passage.isStylesheet():
                 for t in self.passage.tags:
                     if t not in tiddlywiki.TiddlyWiki.INFO_TAGS:
                         for otherWidget in self.parent.taggedWidgets(t):
-                            if not otherWidget.dimmed and not otherWidget.passage.isStylesheet() and not otherWidget.passage.isImpt():
+                            if not otherWidget.dimmed and not otherWidget.passage.isStylesheet():
                                 ret.append(otherWidget)
         return ret
 
@@ -379,6 +379,7 @@ class PassageWidget(object):
         Note: Assumes the list existed in the passed in dictionaries. Either make sure this is the case or
         use a defaultDict.
         """
+        flatDesign = True
 
         colors = PassageWidget.FLAT_COLORS if flatDesign else PassageWidget.COLORS
         # Widths for selected and non selected lines
@@ -443,7 +444,9 @@ class PassageWidget(object):
         """
         Returns the title bar style that matches this widget's passage.
         """
-        flat = self.app.config.ReadBool('flatDesign')
+        flat = True
+        # flat = self.app.config.ReadBool('flatDesign')
+
         # First, rely on the header to supply colours
         custom = self.getHeader().passageTitleColor(self.passage)
         if custom:
@@ -451,8 +454,8 @@ class PassageWidget(object):
         # Use default colours
         if self.passage.isAnnotation():
             ind = 'annotation'
-        if self.passage.isImpt():
-            ind = 'impt'
+        if self.passage.isNote():
+            ind = 'note'
         elif self.passage.isImage():
             ind = 'imageTitleBar'
         elif any(t.startswith('Twine.') for t in self.passage.tags):
@@ -836,7 +839,7 @@ class PassageWidget(object):
                'bodyStart': (255, 255, 255), \
                'bodyEnd': (212, 212, 212), \
                'annotation': (85, 87, 83), \
-               'impt': (0, 0, 0), \
+               'note': (0, 0, 0), \
                'endTitleBar': (16, 51, 96), \
                'titleBar': (52, 101, 164), \
                'imageTitleBar': (8, 138, 133), \
@@ -855,7 +858,7 @@ class PassageWidget(object):
                'bodyStart':  (255, 255, 255),
                'bodyEnd':  (255, 255, 255),
                'annotation': (212, 212, 212),
-               'impt': (0, 0, 0),
+               'note': (237, 229, 0),
                'endTitleBar': (36, 54, 219),
                'titleBar': (36, 115, 219),
                'imageTitleBar': (36, 219, 213),

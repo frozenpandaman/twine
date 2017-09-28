@@ -3,7 +3,6 @@ from collections import OrderedDict
 
 class Header(object):
     # The name "id" is too short and is the name of a builtin, but it's part of the interface now.
-    # pylint: disable=invalid-name,redefined-builtin
 
     def __init__(self, id, path, builtinPath):
         self.id = id.lower()
@@ -117,8 +116,8 @@ class Header(object):
             return ((111, 49, 83),(234, 123, 184))
         elif passage.isInfoPassage():
             return ((28, 89, 74), (41, 214, 113))
-        elif passage.isImpt():
-            return ((0, 0, 0), (0, 0, 0))
+        elif passage.isNote():
+            return ((237, 229, 0), (237, 229, 0))
         elif passage.title == "Start":
             return ("#4ca333", "#4bdb24")
         elif passage.title == "End": # :D
@@ -144,7 +143,6 @@ class Header(object):
                 * end index
         """
         # Arguments are part of the interface even if the default implementation doesn't use them.
-        # pylint: disable=unused-argument
         def checkUnmatchedMacro(tag, start, end, style, passage=None):
             if style == tweelexer.TweeLexer.BAD_MACRO:
                 matchKind = "start" if "end" in tag else "end"
