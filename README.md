@@ -6,23 +6,23 @@ A visual tool for creating interactive stories for the Web, based on the [Twee](
 
 ## Changes from Twine 1.4.2
 
- * Switch to Unicode instead of ASCII
  * Update to wxPython Phoenix (4.0) for easier installation
+   * Use Unicode instead of ASCII
  * Fix file opening & closing
  * Allow passages to overlap
+ * Fix size of annotation passages; add note passages
  * Fix *some* 1.4.2 [bugs](https://twinery.org/wiki/twine_1.4.2_bugs) (already in repo upon fork)
  * Shrink toolbar
  * Use Flat Design(TM) mode by default
- * Fix size of annotation passages; add note passages
  * Include [SugarCube](https://www.motoslave.net/sugarcube/2/#downloads) story format
 
  ## Issues / improvements
 
- [ ] Recent file menu broken (segfault – disabled for now)
- [ ] Error about opening stories on launch (supressed for now)
- [ ] Cannot import images over https
- [ ] Exported .rtf is unreadable
- [ ] Emoji support (?)
+ - [ ] Recent file menu broken (segfault – disabled for now)
+ - [ ] Error about opening stories on launch (supressed for now)
+ - [ ] Cannot import images over https
+ - [ ] Exported .rtf is unreadable
+ - [ ] Emoji support (?)
 
 ## Development environment setup
 
