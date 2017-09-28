@@ -37,7 +37,7 @@ def base64ToBitmap(text):
         # Convert to bitmap
         imgData = text.decode('base64')
         stream = cStringIO.StringIO(imgData)
-        return wx.BitmapFromImage(wx.ImageFromStream(stream))
+        return wx.Bitmap(wx.Image(stream))
     except:
         pass
 

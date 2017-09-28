@@ -64,10 +64,10 @@ class StoryPanel(wx.ScrolledWindow):
 
         # cursors
 
-        self.dragCursor = wx.StockCursor(wx.CURSOR_SIZING)
-        self.badDragCursor = wx.StockCursor(wx.CURSOR_NO_ENTRY)
-        self.scrollCursor = wx.StockCursor(wx.CURSOR_SIZING)
-        self.defaultCursor = wx.StockCursor(wx.CURSOR_ARROW)
+        self.dragCursor = wx.Cursor(wx.CURSOR_SIZING)
+        self.badDragCursor = wx.Cursor(wx.CURSOR_NO_ENTRY)
+        self.scrollCursor = wx.Cursor(wx.CURSOR_SIZING)
+        self.defaultCursor = wx.Cursor(wx.CURSOR_ARROW)
         self.SetCursor(self.defaultCursor)
 
         # events
@@ -161,7 +161,7 @@ class StoryPanel(wx.ScrolledWindow):
         for widget in self.widgetDict.itervalues():
             if widget.selected: data.append(widget.serialize())
 
-        clipData = wx.CustomDataObject(wx.CustomDataFormat(StoryPanel.CLIPBOARD_FORMAT))
+        clipData = wx.CustomDataObject(wx.DataFormat(StoryPanel.CLIPBOARD_FORMAT))
         clipData.SetData(pickle.dumps(data, 1))
 
         if wx.TheClipboard.Open():
@@ -176,7 +176,7 @@ class StoryPanel(wx.ScrolledWindow):
 
     def pasteWidgets(self, pos = (0,0), logicals = False):
         """Pastes widgets from the clipboard."""
-        clipFormat = wx.CustomDataFormat(StoryPanel.CLIPBOARD_FORMAT)
+        clipFormat = wx.DataFormat(StoryPanel.CLIPBOARD_FORMAT)
         clipData = wx.CustomDataObject(clipFormat)
 
         if wx.TheClipboard.Open():
@@ -1012,7 +1012,8 @@ class StoryPanel(wx.ScrolledWindow):
                     text += "..."
             # Don't show a tooltip for a 0-length passage
             if length > 0:
-                self.tooltipobj = wx.TipWindow(self, text, min(240, max(160,length/2)), wx.Rect(m[0],m[1],1,1))
+                # self.tooltipobj = wx.TipWindow(self, text, min(240, max(160,length/2)), wx.Rect(m[0],m[1],1,1))
+                self.tooltipobj = wx.TipWindow(self, text, min(240, max(160,length/2)))
 
     def handleHover(self, event):
         self.updateVisableRectsAndReturnUpdateRegion()
@@ -1095,25 +1096,25 @@ class StoryPanelContext(wx.Menu):
 
         if self.parent.parent.menus.IsEnabled(wx.ID_PASTE):
             pastePassage = wx.MenuItem(self, wx.NewId(), 'Paste Passage Here')
-            self.AppendItem(pastePassage)
+            self.Append(pastePassage)
             self.Bind(wx.EVT_MENU, lambda e: self.parent.pasteWidgets(self.getPos()), id = pastePassage.GetId())
 
         newPassage = wx.MenuItem(self, wx.NewId(), 'New Passage Here')
-        self.AppendItem(newPassage)
+        self.Append(newPassage)
         self.Bind(wx.EVT_MENU, self.newWidget, id = newPassage.GetId())
 
         self.AppendSeparator()
 
         newPassage = wx.MenuItem(self, wx.NewId(), 'New Stylesheet Here')
-        self.AppendItem(newPassage)
+        self.Append(newPassage)
         self.Bind(wx.EVT_MENU, lambda e: self.newWidget(e, text = StoryPanel.FIRST_CSS, tags = ['stylesheet']), id = newPassage.GetId())
 
         newPassage = wx.MenuItem(self, wx.NewId(), 'New Script Here')
-        self.AppendItem(newPassage)
+        self.Append(newPassage)
         self.Bind(wx.EVT_MENU, lambda e: self.newWidget(e, tags = ['script']), id = newPassage.GetId())
 
         newPassage = wx.MenuItem(self, wx.NewId(), 'New Note Here')
-        self.AppendItem(newPassage)
+        self.Append(newPassage)
         self.Bind(wx.EVT_MENU, lambda e: self.newWidget(e, tags = ['note']), id = newPassage.GetId())
 
     def getPos(self):
@@ -1128,9 +1129,9 @@ class StoryPanelContext(wx.Menu):
 
 # drag and drop listener
 
-class StoryPanelDropTarget(wx.PyDropTarget):
+class StoryPanelDropTarget(wx.DropTarget):
     def __init__(self, panel):
-        wx.PyDropTarget.__init__(self)
+        wx.DropTarget.__init__(self)
         self.panel = panel
         self.data = wx.DataObjectComposite()
         self.filedrop = wx.FileDataObject()

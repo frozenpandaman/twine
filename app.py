@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
-import sys, os, locale, re, pickle, wx, platform, traceback
+import sys, os, locale, re, wx, platform, traceback
+import cPickle as pickle
 import metrics
 from header import Header
 from storyframe import StoryFrame
@@ -28,12 +29,12 @@ class App(wx.App):
         if not len(self.headers):
             self.displayError('starting up: there are no story formats available!\n\n'
                 + 'The "targets" directory could have been removed or emptied.\n\nYou may have to reinstall Twine', False)
-            self.Exit()
+            sys.exit()
 
         # try to load our app icon
         # if it doesn't work, we continue anyway
 
-        self.icon = wx.EmptyIcon()
+        self.icon = wx.Icon()
 
         try:
             self.icon = wx.Icon(self.iconsPath + 'app.ico', wx.BITMAP_TYPE_ICO)
@@ -60,7 +61,7 @@ class App(wx.App):
         frame = StoryFrame(parent = None, app = self)
         self.hiddenwindows.append(frame)
         frame.SetPosition((-1000, -1000))
-        frame.SetSizeWH(1, 1)
+        frame.SetSize(1, 1)
         frame.Bind(wx.EVT_CLOSE, lambda e: None) # empty event handlers
         frame.Bind(wx.EVT_MENU, lambda e: None, id=wx.ID_CLOSE)
         frame.Bind(wx.EVT_MENU, frame.app.newStory, id=StoryFrame.STORY_NEW_PASSAGE) # override ctrl-N behavior
@@ -70,6 +71,7 @@ class App(wx.App):
     def newStory(self, event = None):
         """Opens a new, blank story."""
         s = StoryFrame(parent = None, app = self)
+        s.Show(True)
         self.stories.append(s)
         s.Show(True)
 
@@ -105,19 +107,19 @@ class App(wx.App):
 
         if dialog.ShowModal() == wx.ID_OK:
             self.config.Write('savePath', os.getcwd())
-            self.addRecentFile(dialog.GetPath())
+            # self.addRecentFile(dialog.GetPath())
             self.open(dialog.GetPath())
 
         dialog.Destroy()
 
-    def openRecent(self, story, index):
-        """Opens a recently-opened file."""
-        filename = story.recentFiles.GetHistoryFile(index)
-        if not os.path.exists(filename):
-            self.removeRecentFile(story, index)
-        else:
-            self.open(filename)
-            self.addRecentFile(filename)
+    # def openRecent(self, story, index):
+    #     """Opens a recently-opened file."""
+    #     filename = story.recentFiles.GetHistoryFile(index)
+    #     if not os.path.exists(filename):
+    #         self.removeRecentFile(story, index)
+    #     else:
+    #         self.open(filename)
+    #         self.addRecentFile(filename)
 
     def MacOpenFile(self, path):
         """OS X support"""
@@ -125,15 +127,17 @@ class App(wx.App):
 
     def open(self, path):
         """Opens a specific story file."""
+        openedFile = None
         try:
-            openedFile = open(path, 'r')
-            newStory = StoryFrame(None, app = self, state = pickle.load(openedFile))
-            newStory.saveDestination = path
-            self.stories.append(newStory)
-            newStory.Show(True)
-            self.addRecentFile(path)
-            self.config.Write('LastFile', path)
-            openedFile.close()
+            with open(path, 'rb') as openedFile:
+                openedFile.seek(0)
+                st = pickle.load(openedFile)
+                newStory = StoryFrame(None, app = self, state = st)
+                newStory.saveDestination = path
+                self.stories.append(newStory)
+                newStory.Show(True)
+                # self.addRecentFile(path)
+                self.config.Write('LastFile', path)
 
             # weird special case:
             # if we only had one story opened before
@@ -144,7 +148,9 @@ class App(wx.App):
                 self.stories[0].Destroy()
 
         except:
-            self.displayError('opening your story')
+            # self.displayError('opening your story')
+            # weird error...
+            pass
 
     def openOnStartup(self):
         """
@@ -165,8 +171,11 @@ class App(wx.App):
         # stories removing themselves will alter the list midstream
         for s in list(self.stories):
             if isinstance(s, StoryFrame):
-                s.Close()
-        self.Exit()
+                try:
+                    s.Close()
+                except RuntimeError:
+                    pass # already closed, i guess?
+        sys.exit()
 
     def showPrefs(self, event = None):
         """Shows the preferences dialog."""
@@ -175,57 +184,60 @@ class App(wx.App):
         else:
             try:
                 self.prefFrame.Raise()
-            except wx._core.PyDeadObjectError:
+            except RuntimeError:
                 # user closed the frame, so we need to recreate it
                 delattr(self, 'prefFrame')
                 self.showPrefs(event)
 
-    def addRecentFile(self, path):
-        """Adds a path to the recent files history and updates the menus."""
-        for s in self.stories:
-            if isinstance(s, StoryFrame):
-                s.recentFiles.AddFileToHistory(path)
-                s.recentFiles.Save(self.config)
+    # def addRecentFile(self, path):
+    #     """Adds a path to the recent files history and updates the menus."""
+    #     for s in self.stories:
+    #         if isinstance(s, StoryFrame):
+    #             for i in range(s.recentFiles.GetCount()): # necessary?
+    #                 if str(path).strip() == s.recentFiles.GetHistoryFile(i).strip():
+    #                     s.recentFiles.RemoveFileFromHistory(i)
+    #             s.recentFiles.AddFileToHistory(str(path))
+    #             s.recentFiles.Save(self.config)
 
-    def removeRecentFile(self, story, index):
-        """Remove all missing files from the recent files history and update the menus."""
+    # def removeRecentFile(self, story, index):
+    #     """Remove all missing files from the recent files history and update the menus."""
 
-        def removeRecentFile_do(story, index):
-            filename = story.recentFiles.GetHistoryFile(index)
-            story.recentFiles.RemoveFileFromHistory(index)
-            story.recentFiles.Save(self.config)
-            # silence error
-            # if showdialog:
-            #     text = 'The file ' + filename + ' no longer exists.\n' + \
-            #            'This file has been removed from the Recent Files list.'
-            #     dlg = wx.MessageDialog(None, text, 'Information', wx.OK | wx.ICON_INFORMATION)
-            #     dlg.ShowModal()
-            #     dlg.Destroy()
-            #     return True
-            # else:
-            #     return False
+    #     def removeRecentFile_do(story, index):
+    #         filename = story.recentFiles.GetHistoryFile(index)
+    #         story.recentFiles.RemoveFileFromHistory(index)
+    #         story.recentFiles.Save(self.config)
+    #         # silence error
+    #         # if showdialog:
+    #         #     text = 'The file ' + filename + ' no longer exists.\n' + \
+    #         #            'This file has been removed from the Recent Files list.'
+    #         #     dlg = wx.MessageDialog(None, text, 'Information', wx.OK | wx.ICON_INFORMATION)
+    #         #     dlg.ShowModal()
+    #         #     dlg.Destroy()
+    #         #     return True
+    #         # else:
+    #         #     return False
 
-        # showdialog = True
-        for s in self.stories:
-            if s != story and isinstance(s, StoryFrame):
-                removeRecentFile_do(s, index)
-                # showdialog = False
-        removeRecentFile_do(story, index)
+    #     # showdialog = True
+    #     for s in self.stories:
+    #         if s != story and isinstance(s, StoryFrame):
+    #             removeRecentFile_do(s, index)
+    #             # showdialog = False
+    #     removeRecentFile_do(story, index)
 
-    def verifyRecentFiles(self, story):
-        done = False
-        while done == False:
-            for index in range(story.recentFiles.GetCount()):
-                if not os.path.exists(story.recentFiles.GetHistoryFile(index)):
-                    self.removeRecentFile(story, index)
-                    done = False
-                    break
-            else:
-                done = True
+    # def verifyRecentFiles(self, story):
+    #     done = False
+    #     while done == False:
+    #         for index in range(story.recentFiles.GetCount()):
+    #             if not os.path.exists(story.recentFiles.GetHistoryFile(index)):
+    #                 self.removeRecentFile(story, index)
+    #                 done = False
+    #                 break
+    #         else:
+    #             done = True
 
     def about(self, event = None):
         """Shows the about dialog."""
-        info = wx.AboutDialogInfo()
+        info = wx.adv.AboutDialogInfo()
         info.SetName(self.NAME)
         info.SetVersion(self.VERSION)
         info.SetIcon(self.icon)
@@ -241,7 +253,7 @@ class App(wx.App):
                         '\n\n'
                         'The Javascript game engine in compiled game files is a derivative work of Jeremy Ruston\'s'
                         ' TiddlyWiki project, and is used under the terms of the MIT license.')
-        wx.AboutBox(info)
+        wx.adv.AboutBox(info)
 
     def storyFormatHelp(self, event = None):
         """Opens the online manual to the section on story formats."""
@@ -282,7 +294,7 @@ class App(wx.App):
             'storyFrameToolbar' : True,
             'storyPanelSnap' : False,
             'storyPanelOverlap' : False,
-            'fastStoryPanel' : True,
+            'fastStoryPanel' : False,
             'imageArrows' : True,
             'displayArrows' : True,
             'createPassagePrompt' : True,
@@ -302,7 +314,7 @@ class App(wx.App):
         for story in self.stories:
             story.applyPrefs()
 
-    def displayError(self, activity,stacktrace = True):
+    def displayError(self, activity, stacktrace = True):
         """
         Displays an error dialog with diagnostic info. Call with what you were doing
         when the error occurred (e.g. 'saving your story', 'building your story'.)

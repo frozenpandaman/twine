@@ -135,14 +135,14 @@ class FullscreenEditFrame(wx.Frame):
 
     def hideCursor(self, event = None):
         if self.cursorVisible:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
-            self.editCtrl.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+            self.SetCursor(wx.Cursor(wx.CURSOR_BLANK))
+            self.editCtrl.SetCursor(wx.Cursor(wx.CURSOR_BLANK))
             self.cursorVisible = False
 
     def showCursor(self, event = None):
         if not self.cursorVisible:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
-            self.editCtrl.SetCursor(wx.StockCursor(wx.CURSOR_IBEAM))
+            self.SetCursor(wx.Cursor(wx.CURSOR_DEFAULT))
+            self.editCtrl.SetCursor(wx.Cursor(wx.CURSOR_IBEAM))
             self.cursorVisible = True
 
     DIRECTIONS = 'Press Escape to close this passage, F12 or ' + \

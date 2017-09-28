@@ -6,12 +6,23 @@ A visual tool for creating interactive stories for the Web, based on the [Twee](
 
 ## Changes from Twine 1.4.2
 
+ * Switch to Unicode instead of ASCII
+ * Update to wxPython Phoenix (4.0) for easier installation
  * Fix file opening & closing
- * Allow passages to overlap (messy)
+ * Allow passages to overlap
  * Fix *some* 1.4.2 [bugs](https://twinery.org/wiki/twine_1.4.2_bugs) (already in repo upon fork)
- * Collapse toolbar
- * Fix size of annotation/note passages
+ * Shrink toolbar
+ * Use Flat Design(TM) mode by default
+ * Fix size of annotation passages; add note passages
  * Include [SugarCube](https://www.motoslave.net/sugarcube/2/#downloads) story format
+
+ ## Issues / improvements
+
+ [ ] Recent file menu broken (segfault – disabled for now)
+ [ ] Error about opening stories on launch (supressed for now)
+ [ ] Cannot import images over https
+ [ ] Exported .rtf is unreadable
+ [ ] Emoji support (?)
 
 ## Development environment setup
 
@@ -26,12 +37,11 @@ Notes:
    ```
    git clone https://github.com/frozenpandaman/twine.git
    pip install py2app
+   brew install wxpython
    cd twine/
    ```
 
-2. Follow [these instructions](http://davixx.fr/blog/2016/01/25/wxpython-on-os-x-el-capitan/) ([mirror](https://web.archive.org/web/20170926104627/http://davixx.fr/blog/2016/01/25/wxpython-on-os-x-el-capitan/)) to install wxPython 3.0.2.0 on OS X 10.11 (there's a bug with the .pkg installer). 
-
-3. Run `python app.py` to launch. Build with `python buildapp.py py2app`.
+2. Run `python app.py` to launch. Build with `python buildapp.py py2app`.
 
 ## Contact
 

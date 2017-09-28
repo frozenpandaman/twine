@@ -1,4 +1,4 @@
-import sys, os, re, threading, wx, wx.lib.scrolledpanel, wx.animate, base64, tweeregex
+import sys, os, re, threading, wx, wx.lib.scrolledpanel, wx.adv, base64, tweeregex
 import metrics, images
 from version import versionString
 from tweelexer import TweeLexer
@@ -45,11 +45,11 @@ class PassageFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.editSelection, id = PassageFrame.PASSAGE_EDIT_SELECTION)
 
         self.outLinksMenu = wx.Menu()
-        self.outLinksMenuTitle = passageMenu.AppendMenu(wx.ID_ANY, 'Outgoing Links', self.outLinksMenu)
+        self.outLinksMenuTitle = passageMenu.Append(wx.ID_ANY, 'Outgoing Links', self.outLinksMenu)
         self.inLinksMenu = wx.Menu()
-        self.inLinksMenuTitle = passageMenu.AppendMenu(wx.ID_ANY, 'Incoming Links', self.inLinksMenu)
+        self.inLinksMenuTitle = passageMenu.Append(wx.ID_ANY, 'Incoming Links', self.inLinksMenu)
         self.brokenLinksMenu = wx.Menu()
-        self.brokenLinksMenuTitle = passageMenu.AppendMenu(wx.ID_ANY, 'Broken Links', self.brokenLinksMenu)
+        self.brokenLinksMenuTitle = passageMenu.Append(wx.ID_ANY, 'Broken Links', self.brokenLinksMenu)
 
         passageMenu.AppendSeparator()
 
@@ -185,8 +185,8 @@ class PassageFrame(wx.Frame):
         self.bodyInput.SetMarginWidth(1, 0)
         self.bodyInput.SetTabWidth(4)
         self.bodyInput.SetWrapMode(wx.stc.STC_WRAP_WORD)
-        self.bodyInput.SetSelBackground(True, wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHT))
-        self.bodyInput.SetSelForeground(True, wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT))
+        self.bodyInput.SetSelBackground(True, wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT))
+        self.bodyInput.SetSelForeground(True, wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT))
         self.bodyInput.SetFocus()
 
         # The default keyboard shortcuts for StyledTextCtrl are
@@ -467,7 +467,7 @@ class PassageFrame(wx.Frame):
         else:
             try:
                 self.searchFrame.Raise()
-            except wx._core.PyDeadObjectError:
+            except RuntimeError:
                 # user closed the frame, so we need to recreate it
                 delattr(self, 'searchFrame')
                 self.showSearchFrame(type)
@@ -733,7 +733,7 @@ class PassageFrame(wx.Frame):
 
         def populate(menu, links):
             for item in menu.GetMenuItems():
-                menu.DeleteItem(item)
+                menu.Delete(item)
 
             if len(links):
                 for link in links:
@@ -1046,11 +1046,11 @@ class ImageFrame(PassageFrame):
             # GIF animation
             if t.startswith("data:image/gif"):
 
-                self.gif = wx.animate.AnimationCtrl(self.imageScroller, size = size)
+                self.gif = wx.adv.AnimationCtrl(self.imageScroller, size = size)
                 self.imageSizer.Add(self.gif, 1, wx.ALIGN_CENTER)
 
                 # Convert the full GIF to an Animation
-                anim = wx.animate.Animation()
+                anim = wx.adv.Animation()
                 data = base64.b64decode(t[t.index("base64,")+7:])
                 anim.Load(cStringIO.StringIO(data))
 

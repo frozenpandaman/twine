@@ -65,23 +65,36 @@ class StoryFrame(wx.Frame):
         fileMenu.Append(wx.ID_OPEN, '&Open Story...\tCtrl-O')
         self.Bind(wx.EVT_MENU, self.app.openDialog, id=wx.ID_OPEN)
 
-        recentFilesMenu = wx.Menu()
-        self.recentFiles = wx.FileHistory(self.app.RECENT_FILES)
-        self.recentFiles.Load(self.app.config)
-        self.app.verifyRecentFiles(self)
-        self.recentFiles.UseMenu(recentFilesMenu)
-        self.recentFiles.AddFilesToThisMenu(recentFilesMenu)
-        fileMenu.AppendMenu(wx.ID_ANY, 'Open &Recent', recentFilesMenu)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 0), id=wx.ID_FILE1)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 1), id=wx.ID_FILE2)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 2), id=wx.ID_FILE3)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 3), id=wx.ID_FILE4)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 4), id=wx.ID_FILE5)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 5), id=wx.ID_FILE6)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 6), id=wx.ID_FILE7)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 7), id=wx.ID_FILE8)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 8), id=wx.ID_FILE9)
-        self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 9), id=wx.ID_FILE9 + 1)
+        # recentFilesMenu = wx.Menu()
+        # self.recentFiles = wx.FileHistory(self.app.RECENT_FILES)
+        # self.recentFiles.Load(self.app.config)
+        # self.app.verifyRecentFiles(self)
+        # self.recentFiles.UseMenu(recentFilesMenu)
+        # self.recentFiles.AddFilesToMenu(recentFilesMenu)
+
+        # numRecentFiles = self.recentFiles.GetCount()
+
+        # fileMenu.Append(wx.ID_ANY, 'Open &Recent', recentFilesMenu)
+        # if numRecentFiles > 0: # necessary?
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 0), id=wx.ID_FILE1)
+        # if numRecentFiles > 1:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 1), id=wx.ID_FILE2)
+        # if numRecentFiles > 2:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 2), id=wx.ID_FILE3)
+        # if numRecentFiles > 3:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 3), id=wx.ID_FILE4)
+        # if numRecentFiles > 4:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 4), id=wx.ID_FILE5)
+        # if numRecentFiles > 5:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 5), id=wx.ID_FILE6)
+        # if numRecentFiles > 6:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 6), id=wx.ID_FILE7)
+        # if numRecentFiles > 7:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 7), id=wx.ID_FILE8)
+        # if numRecentFiles > 8:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 8), id=wx.ID_FILE9)
+        # if numRecentFiles > 9:
+        #     self.Bind(wx.EVT_MENU, lambda e: self.app.openRecent(self, 9), id=wx.ID_FILE9 + 1)
 
         fileMenu.AppendSeparator()
 
@@ -105,7 +118,7 @@ class StoryFrame(wx.Frame):
         importMenu.Append(StoryFrame.FILE_IMPORT_SOURCE, 'Twee Source &Code...')
         self.Bind(wx.EVT_MENU, self.importSourceDialog, id=StoryFrame.FILE_IMPORT_SOURCE)
 
-        fileMenu.AppendMenu(wx.ID_ANY, '&Import', importMenu)
+        fileMenu.Append(wx.ID_ANY, '&Import', importMenu)
 
         # Export submenu
 
@@ -117,7 +130,7 @@ class StoryFrame(wx.Frame):
         exportMenu.Append(StoryFrame.FILE_EXPORT_PROOF, '&Proofing Copy...')
         self.Bind(wx.EVT_MENU, self.proof, id=StoryFrame.FILE_EXPORT_PROOF)
 
-        fileMenu.AppendMenu(wx.ID_ANY, '&Export', exportMenu)
+        fileMenu.Append(wx.ID_ANY, '&Export', exportMenu)
 
         fileMenu.AppendSeparator()
 
@@ -238,7 +251,7 @@ class StoryFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, lambda e: self.storyPanel.newWidget(tags=['note']),
                   id=StoryFrame.STORY_NEW_ANNOTATION)
 
-        self.storyMenu.AppendMenu(wx.ID_ANY, 'New', self.newPassageMenu)
+        self.storyMenu.Append(wx.ID_ANY, 'New', self.newPassageMenu)
 
         self.storyMenu.Append(wx.ID_EDIT, '&Edit Passage\tCtrl-E')
         self.Bind(wx.EVT_MENU, lambda e: self.storyPanel.eachSelectedWidget(lambda w: w.openEditor(e)), id=wx.ID_EDIT)
@@ -286,7 +299,7 @@ class StoryFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, lambda e: wx.LaunchDefaultBrowser('http://twinery.org/wiki/special_passages'),
                   id=StoryFrame.STORYSETTINGS_HELP)
 
-        self.storyMenu.AppendMenu(wx.ID_ANY, 'Special Passages', self.storySettingsMenu)
+        self.storyMenu.Append(wx.ID_ANY, 'Special Passages', self.storySettingsMenu)
 
         self.storyMenu.AppendSeparator()
 
@@ -296,7 +309,7 @@ class StoryFrame(wx.Frame):
         self.importImageMenu.Append(StoryFrame.STORY_IMPORT_IMAGE_URL, 'From Web &URL...')
         self.Bind(wx.EVT_MENU, self.importImageURLDialog, id=StoryFrame.STORY_IMPORT_IMAGE_URL)
 
-        self.storyMenu.AppendMenu(wx.ID_ANY, 'Import &Image', self.importImageMenu)
+        self.storyMenu.Append(wx.ID_ANY, 'Import &Image', self.importImageMenu)
 
         self.storyMenu.Append(StoryFrame.STORY_IMPORT_FONT, 'Import &Font...')
         self.Bind(wx.EVT_MENU, self.importFontDialog, id=StoryFrame.STORY_IMPORT_FONT)
@@ -327,7 +340,7 @@ class StoryFrame(wx.Frame):
         storyFormatMenu.Append(StoryFrame.STORY_FORMAT_HELP, '&About Story Formats')
         self.Bind(wx.EVT_MENU, lambda e: self.app.storyFormatHelp(), id=StoryFrame.STORY_FORMAT_HELP)
 
-        self.storyMenu.AppendMenu(wx.ID_ANY, 'Story &Format', storyFormatMenu)
+        self.storyMenu.Append(wx.ID_ANY, 'Story &Format', storyFormatMenu)
 
         self.storyMenu.Append(StoryFrame.STORY_METADATA, 'Story &Metadata...')
         self.Bind(wx.EVT_MENU, self.showMetadata, id=StoryFrame.STORY_METADATA)
@@ -415,36 +428,36 @@ class StoryFrame(wx.Frame):
         self.toolbar = self.CreateToolBar(style=wx.TB_FLAT | wx.TB_NODIVIDER)
         self.toolbar.SetToolBitmapSize((StoryFrame.TOOLBAR_ICON_SIZE, StoryFrame.TOOLBAR_ICON_SIZE))
 
-        self.toolbar.AddLabelTool(StoryFrame.STORY_NEW_PASSAGE, 'New Passage', \
+        self.toolbar.AddTool(StoryFrame.STORY_NEW_PASSAGE, 'New Passage', \
                                   wx.Bitmap(iconPath + 'newpassage.png'), \
                                   shortHelp=StoryFrame.NEW_PASSAGE_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.newWidget(), id=StoryFrame.STORY_NEW_PASSAGE)
 
         self.toolbar.AddSeparator()
 
-        self.toolbar.AddLabelTool(wx.ID_ZOOM_IN, 'Zoom In', \
+        self.toolbar.AddTool(wx.ID_ZOOM_IN, 'Zoom In', \
                                   wx.Bitmap(iconPath + 'zoomin.png'), \
                                   shortHelp=StoryFrame.ZOOM_IN_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('in'), id=wx.ID_ZOOM_IN)
 
-        self.toolbar.AddLabelTool(wx.ID_ZOOM_OUT, 'Zoom Out', \
+        self.toolbar.AddTool(wx.ID_ZOOM_OUT, 'Zoom Out', \
                                   wx.Bitmap(iconPath + 'zoomout.png'), \
                                   shortHelp=StoryFrame.ZOOM_OUT_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('out'), id=wx.ID_ZOOM_OUT)
 
-        self.toolbar.AddLabelTool(wx.ID_ZOOM_100, 'Zoom to 100%', \
+        self.toolbar.AddTool(wx.ID_ZOOM_100, 'Zoom to 100%', \
                                   wx.Bitmap(iconPath + 'zoom1.png'), \
                                   shortHelp=StoryFrame.ZOOM_ONE_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom(1.0), id=wx.ID_ZOOM_100)
 
-        self.toolbar.AddLabelTool(wx.ID_ZOOM_FIT, 'Zoom to Fit', \
+        self.toolbar.AddTool(wx.ID_ZOOM_FIT, 'Zoom to Fit', \
                                   wx.Bitmap(iconPath + 'zoomfit.png'), \
                                   shortHelp=StoryFrame.ZOOM_FIT_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('fit'), id=wx.ID_ZOOM_FIT)
 
         # self.toolbar.AddSeparator()
 
-        # self.toolbar.AddLabelTool(wx.ID_MAXIMIZE_FRAME, 'Full Screen', \
+        # self.toolbar.AddTool(wx.ID_MAXIMIZE_FRAME, 'Full Screen', \
         #                           wx.Bitmap(iconPath + 'fullscreen.png'), \
         #                           shortHelp=StoryFrame.MAXIMIZE_EDITOR_TOOLTIP)
         # if not self.IsFullScreen():
@@ -537,7 +550,7 @@ class StoryFrame(wx.Frame):
             if dialog.GetFilterIndex() == 0:
                 self.saveDestination = dialog.GetPath()
                 self.app.config.Write('savePath', os.getcwd())
-                self.app.addRecentFile(self.saveDestination)
+                # self.app.addRecentFile(self.saveDestination)
                 self.save(None)
             elif dialog.GetFilterIndex() == 1:
                 npsavedestination = dialog.GetPath()
@@ -545,7 +558,7 @@ class StoryFrame(wx.Frame):
                     dest = open(npsavedestination, 'wb')
                     pickle.dump(self.serialize_noprivate(npsavedestination), dest)
                     dest.close()
-                    self.app.addRecentFile(npsavedestination)
+                    # self.app.addRecentFile(npsavedestination)
                 except:
                     self.app.displayError('saving your story')
 
@@ -1083,7 +1096,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
         else:
             try:
                 self.metadataFrame.Raise()
-            except wx._core.PyDeadObjectError:
+            except RuntimeError:
                 # user closed the frame, so we need to recreate it
                 delattr(self, 'metadataFrame')
                 self.showMetadata(event)
@@ -1098,7 +1111,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
         else:
             try:
                 self.findFrame.Raise()
-            except wx._core.PyDeadObjectError:
+            except RuntimeError:
                 # user closed the frame, so we need to recreate it
                 delattr(self, 'findFrame')
                 self.showFind(event)
@@ -1112,7 +1125,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
         else:
             try:
                 self.replaceFrame.Raise()
-            except wx._core.PyDeadObjectError:
+            except RuntimeError:
                 # user closed the frame, so we need to recreate it
                 delattr(self, 'replaceFrame')
                 self.showReplace(event)
@@ -1350,7 +1363,7 @@ class ClipboardMonitor(wx.Timer):
     def __init__(self, callback):
         wx.Timer.__init__(self)
         self.callback = callback
-        self.dataFormat = wx.CustomDataFormat(StoryPanel.CLIPBOARD_FORMAT)
+        self.dataFormat = wx.DataFormat(StoryPanel.CLIPBOARD_FORMAT)
         self.state = None
 
     def Notify(self, *args, **kwargs):
