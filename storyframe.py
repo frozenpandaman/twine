@@ -16,8 +16,15 @@ class StoryFrame(wx.Frame):
     """
 
     def __init__(self, parent, app, state=None, refreshIncludes=True):
+        if state:
+            try:
+                storysize = wx.Size(state['storyPanel']['storywidth'], state['storyPanel']['storyheight'])
+            except:
+                storysize = StoryFrame.DEFAULT_SIZE
+        else:
+            storysize = StoryFrame.DEFAULT_SIZE
         wx.Frame.__init__(self, parent, wx.ID_ANY, title=StoryFrame.DEFAULT_TITLE, \
-                          size=StoryFrame.DEFAULT_SIZE)
+                          size=storysize)
         self.app = app
         self.parent = parent
         self.pristine = True  # the user has not added any content to this at all
@@ -352,13 +359,13 @@ class StoryFrame(wx.Frame):
 
         buildMenu = wx.Menu()
 
-        buildMenu.Append(StoryFrame.BUILD_TEST, '&Test Play\tCtrl-T')
-        self.Bind(wx.EVT_MENU, self.testBuild, id=StoryFrame.BUILD_TEST)
-
-        buildMenu.Append(StoryFrame.BUILD_TEST_HERE, 'Test Play From Here\tCtrl-Shift-T')
+        buildMenu.Append(StoryFrame.BUILD_TEST_HERE, '&Test Play From Here\tCtrl-T')
         self.Bind(wx.EVT_MENU,
                   lambda e: self.storyPanel.eachSelectedWidget(lambda w: self.testBuild(startAt=w.passage.title)), \
                   id=StoryFrame.BUILD_TEST_HERE)
+
+        buildMenu.Append(StoryFrame.BUILD_TEST, 'Test Play From Start\tCtrl-Shift-T')
+        self.Bind(wx.EVT_MENU, self.testBuild, id=StoryFrame.BUILD_TEST)
 
         buildMenu.Append(StoryFrame.BUILD_VERIFY, '&Verify All Passages')
         self.Bind(wx.EVT_MENU, self.verify, id=StoryFrame.BUILD_VERIFY)
@@ -538,30 +545,6 @@ class StoryFrame(wx.Frame):
             self.Destroy()
         if h != None:
             h.Hide()
-
-    def saveAs(self, event=None):
-        """Asks the user to choose a file to save state to, then passes off control to save()."""
-        dialog = wx.FileDialog(self, 'Save Story As', os.getcwd(), "", \
-                               "Twine Story (*.tws)|*.tws|Twine Story without private content [copy] (*.tws)|*.tws", \
-                               wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
-
-        if dialog.ShowModal() == wx.ID_OK:
-            if dialog.GetFilterIndex() == 0:
-                self.saveDestination = dialog.GetPath()
-                self.app.config.Write('savePath', os.getcwd())
-                # self.app.addRecentFile(self.saveDestination)
-                self.save(None)
-            elif dialog.GetFilterIndex() == 1:
-                npsavedestination = dialog.GetPath()
-                try:
-                    dest = open(npsavedestination, 'wb')
-                    pickle.dump(self.serialize_noprivate(npsavedestination), dest)
-                    dest.close()
-                    # self.app.addRecentFile(npsavedestination)
-                except:
-                    self.app.displayError('saving your story')
-
-        dialog.Destroy()
 
     def exportSource(self, event=None):
         """Asks the user to choose a file to export source to, then exports the wiki."""
@@ -866,6 +849,30 @@ Any macros in this passage will be run before the Start passage (or any passage 
             self.app.config.Write('LastFile', self.saveDestination)
         except:
             self.app.displayError('saving your story')
+
+    def saveAs(self, event=None):
+        """Asks the user to choose a file to save state to, then passes off control to save()."""
+        dialog = wx.FileDialog(self, 'Save Story As', os.getcwd(), "", \
+                               "Twine Story (*.tws)|*.tws|Twine Story without private content [copy] (*.tws)|*.tws", \
+                               wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
+
+        if dialog.ShowModal() == wx.ID_OK:
+            if dialog.GetFilterIndex() == 0:
+                self.saveDestination = dialog.GetPath()
+                self.app.config.Write('savePath', os.getcwd())
+                # self.app.addRecentFile(self.saveDestination)
+                self.save(None)
+            elif dialog.GetFilterIndex() == 1:
+                npsavedestination = dialog.GetPath()
+                try:
+                    dest = open(npsavedestination, 'wb')
+                    pickle.dump(self.serialize_noprivate(npsavedestination), dest)
+                    dest.close()
+                    # self.app.addRecentFile(npsavedestination)
+                except:
+                    self.app.displayError('saving your story')
+
+        dialog.Destroy()
 
     def verify(self, event=None):
         """Runs the syntax checks on all passages."""
@@ -1217,8 +1224,8 @@ Any macros in this passage will be run before the Start passage (or any passage 
 
         # View menu
         self.menus.FindItemById(StoryFrame.VIEW_TOOLBAR).Check(self.showToolbar)
-        # self.menus.FindItemById(StoryFrame.VIEW_SNAP).Check(self.storyPanel.snapping)
-        # self.menus.FindItemById(StoryFrame.VIEW_OVERLAP).Check(self.storyPanel.overlapping)
+        self.menus.FindItemById(StoryFrame.VIEW_SNAP).Check(self.storyPanel.snapping)
+        self.menus.FindItemById(StoryFrame.VIEW_OVERLAP).Check(self.storyPanel.overlapping)
 
         # Story menu, Build menu
 
@@ -1226,16 +1233,16 @@ Any macros in this passage will be run before the Start passage (or any passage 
         testItem = self.menus.FindItemById(StoryFrame.BUILD_TEST_HERE)
         if selections == 1:
             widget = self.storyPanel.selectedWidget()
-            editItem.SetItemLabel("Edit \"" + widget.passage.title + "\"")
+            editItem.SetItemLabel("&Edit \"" + widget.passage.title + "\"\tCtrl-E")
             editItem.Enable(True)
             # Only allow test plays from story passages
-            testItem.SetItemLabel("Test Play From \"" + widget.passage.title + "\""
-                                  if widget.passage.isStoryPassage() else "Test Play From Here")
+            testItem.SetItemLabel("&Test Play From \"" + widget.passage.title + "\"\tCtrl-T"
+                                  if widget.passage.isStoryPassage() else "&Test Play From Here\tCtrl-T")
             testItem.Enable(widget.passage.isStoryPassage())
         else:
-            editItem.SetItemLabel("&Edit Passage")
+            editItem.SetItemLabel("&Edit Passage\tCtrl-E")
             editItem.Enable(False)
-            testItem.SetItemLabel("Test Play From Here")
+            testItem.SetItemLabel("&Test Play From Here")
             testItem.Enable(False)
 
         self.menus.FindItemById(StoryFrame.STORY_EDIT_FULLSCREEN).Enable(selections == 1)

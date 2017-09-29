@@ -359,7 +359,7 @@ class PassageFrame(wx.Frame):
                 else:
                     brokenmsg = 'create the passage "' + brokens[0] + '"?'
                 dialog = wx.MessageDialog(self, 'Do you want to ' + brokenmsg, 'Create Passages', \
-                                                  wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT)
+                                                  wx.ICON_QUESTION | wx.YES_NO | wx.YES_DEFAULT)
                 check = dialog.ShowModal()
                 if check == wx.ID_YES:
                     for title in brokens:

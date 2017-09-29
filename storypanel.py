@@ -49,6 +49,12 @@ class StoryPanel(wx.ScrolledWindow):
 
         if state:
             self.scale = state['scale']
+            try:
+                self.storywidth = state['storywidth']
+                self.storyheight = state['storyheight']
+            except:
+                self.storywidth = self.parent.GetSize()[0]
+                self.storyheight = self.parent.GetSize()[1]
             for widget in state['widgets']:
                 pw = PassageWidget(self, self.app, state = widget)
                 self.widgetDict[pw.passage.title] = pw
@@ -56,6 +62,8 @@ class StoryPanel(wx.ScrolledWindow):
                 self.snapping = state['snapping']
         else:
             self.scale = 1
+            self.storywidth = self.parent.GetSize()[0]
+            self.storyheight = self.parent.GetSize()[1]
             for title in ('Start', 'StoryTitle', 'StoryAuthor'):
                 self.newWidget(title = title, text = self.parent.defaultTextForPassage(title), quietly = True)
 
@@ -834,9 +842,6 @@ class StoryPanel(wx.ScrolledWindow):
         self.scale = max(self.scale, 0.2) # minimum scale
         scaleDelta = self.scale - oldScale
 
-        # figure out what our scroll bar positions should be moved to
-        # to keep in scale
-
         # centerx, centery, div = 0, 0, 0
         # for widget in self.widgetDict.itervalues():
         #     if widget.selected:
@@ -847,23 +852,22 @@ class StoryPanel(wx.ScrolledWindow):
         #     centerx /= div
         #     centery /= div
 
+        # figure out what our scroll bar positions should be moved to
+        # to keep in scale
+
         origin = list(self.GetViewStart())
         ppsu = self.GetScrollPixelsPerUnit()
+        origin[0] += scaleDelta * origin[0]
+        origin[1] += scaleDelta * origin[1]
         # print "center selection x: " + str(centerx / ppsu[0])
         # print "center selection y: " + str(centery / ppsu[1])
         # print "upper left corner x: " + str(origin[0])
         # print "upper left corner y: " + str(origin[1])
 
-        origin[0] += scaleDelta * origin[0]
-        origin[1] += scaleDelta * origin[1]
-
         self.resize()
         self.Refresh()
         self.Scroll(origin[0], origin[1])
         self.parent.updateUI()
-
-
-
 
     def arrowPolygonsToLines(self, list):
         for polygon in list:
@@ -985,8 +989,8 @@ class StoryPanel(wx.ScrolledWindow):
         state = { 'scale': self.scale,
                   'widgets': [],
                   'snapping': self.snapping,
-                #   'storywidth': ,
-                #   'storyheight':
+                  'storywidth': self.parent.GetSize()[0],
+                  'storyheight': self.parent.GetSize()[1]
                 }
 
         for widget in self.widgetDict.itervalues():
@@ -996,7 +1000,12 @@ class StoryPanel(wx.ScrolledWindow):
 
     def serialize_noprivate(self):
         """Returns a dictionary of state suitable for pickling without passage marked with a Twine.private tag."""
-        state = { 'scale': self.scale, 'widgets': [], 'snapping': self.snapping }
+        state = { 'scale': self.scale,
+                  'widgets': [],
+                  'snapping': self.snapping,
+                  'storywidth': self.parent.GetSize()[0],
+                  'storyheight': self.parent.GetSize()[1]
+                }
 
         for widget in self.widgetDict.itervalues():
             if not any('Twine.private' in t for t in widget.passage.tags):
