@@ -37,7 +37,7 @@ Notes:
    ```
    git clone https://github.com/frozenpandaman/twine.git
    pip install py2app
-   brew install wxpython
+   pip install wxpython
    cd twine/
    ```
 

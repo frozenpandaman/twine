@@ -831,13 +831,29 @@ class StoryPanel(wx.ScrolledWindow):
             self.scale = min(widthRatio, heightRatio)
             self.Scroll(0, 0)
 
-        self.scale = max(self.scale, 0.2)
+        self.scale = max(self.scale, 0.2) # minimum scale
         scaleDelta = self.scale - oldScale
 
         # figure out what our scroll bar positions should be moved to
         # to keep in scale
 
+        # centerx, centery, div = 0, 0, 0
+        # for widget in self.widgetDict.itervalues():
+        #     if widget.selected:
+        #         div += 1
+        #         centerx += widget.getCenter()[0]
+        #         centery += widget.getCenter()[1]
+        # if div >= 1:
+        #     centerx /= div
+        #     centery /= div
+
         origin = list(self.GetViewStart())
+        ppsu = self.GetScrollPixelsPerUnit()
+        # print "center selection x: " + str(centerx / ppsu[0])
+        # print "center selection y: " + str(centery / ppsu[1])
+        # print "upper left corner x: " + str(origin[0])
+        # print "upper left corner y: " + str(origin[1])
+
         origin[0] += scaleDelta * origin[0]
         origin[1] += scaleDelta * origin[1]
 
@@ -966,7 +982,12 @@ class StoryPanel(wx.ScrolledWindow):
 
     def serialize(self):
         """Returns a dictionary of state suitable for pickling."""
-        state = { 'scale': self.scale, 'widgets': [], 'snapping': self.snapping }
+        state = { 'scale': self.scale,
+                  'widgets': [],
+                  'snapping': self.snapping,
+                #   'storywidth': ,
+                #   'storyheight':
+                }
 
         for widget in self.widgetDict.itervalues():
             state['widgets'].append(widget.serialize())

@@ -455,13 +455,12 @@ class StoryFrame(wx.Frame):
                                   shortHelp=StoryFrame.ZOOM_FIT_TOOLTIP)
         self.Bind(wx.EVT_TOOL, lambda e: self.storyPanel.zoom('fit'), id=wx.ID_ZOOM_FIT)
 
-        # self.toolbar.AddSeparator()
+        self.toolbar.AddStretchableSpace()
 
-        # self.toolbar.AddTool(wx.ID_MAXIMIZE_FRAME, 'Full Screen', \
-        #                           wx.Bitmap(iconPath + 'fullscreen.png'), \
-        #                           shortHelp=StoryFrame.MAXIMIZE_EDITOR_TOOLTIP)
-        # if not self.IsFullScreen():
-        #     self.Bind(wx.EVT_TOOL, lambda e: self.ShowFullScreen(True), id=wx.ID_MAXIMIZE_FRAME)
+        self.toolbar.AddTool(wx.ID_MAXIMIZE_FRAME, 'Toggle fullscreen', \
+                                  wx.Bitmap(iconPath + 'fullscreen.png'), \
+                                  shortHelp=StoryFrame.MAXIMIZE_EDITOR_TOOLTIP)
+        self.Bind(wx.EVT_TOOL, lambda e: self.ShowFullScreen(not self.IsFullScreen()), id=wx.ID_MAXIMIZE_FRAME)
 
         self.SetIcon(self.app.icon)
 
@@ -1342,7 +1341,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
     ZOOM_OUT_TOOLTIP = 'Zoom out'
     ZOOM_FIT_TOOLTIP = 'Zoom so all passages are visible onscreen'
     ZOOM_ONE_TOOLTIP = 'Zoom to 100%'
-    MAXIMIZE_EDITOR_TOOLTIP = 'Maximize editor'
+    MAXIMIZE_EDITOR_TOOLTIP = 'Toggle fullscreen'
 
     # size constants
 
