@@ -71,7 +71,6 @@ class App(wx.App):
     def newStory(self, event = None):
         """Opens a new, blank story."""
         s = StoryFrame(parent = None, app = self)
-        s.Show(True)
         self.stories.append(s)
         s.Show(True)
 
@@ -98,7 +97,7 @@ class App(wx.App):
                     return (True, h)
 
         except ValueError:
-            pass
+            return (False, None) # used to be pass
 
     def openDialog(self, event = None):
         """Opens a story file of the user's choice."""
@@ -166,7 +165,7 @@ class App(wx.App):
         return True
 
     def exit(self, event = None):
-        """Closes all open stories, implicitly quitting."""
+        """Closes all open stories and quits the application."""
         # need to make a copy of our stories list since
         # stories removing themselves will alter the list midstream
         for s in list(self.stories):
@@ -175,7 +174,8 @@ class App(wx.App):
                     s.Close()
                 except RuntimeError:
                     pass # already closed, i guess?
-        sys.exit()
+        for h in list(self.hiddenwindows):
+            h.Destroy()
 
     def showPrefs(self, event = None):
         """Shows the preferences dialog."""

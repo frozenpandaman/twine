@@ -359,13 +359,13 @@ class StoryFrame(wx.Frame):
 
         buildMenu = wx.Menu()
 
-        buildMenu.Append(StoryFrame.BUILD_TEST_HERE, '&Test Play From Here\tCtrl-T')
+        buildMenu.Append(StoryFrame.BUILD_TEST_HERE, '&Test Play From Start\tCtrl-T')
         self.Bind(wx.EVT_MENU,
                   lambda e: self.storyPanel.eachSelectedWidget(lambda w: self.testBuild(startAt=w.passage.title)), \
                   id=StoryFrame.BUILD_TEST_HERE)
 
-        buildMenu.Append(StoryFrame.BUILD_TEST, 'Test Play From Start\tCtrl-Shift-T')
-        self.Bind(wx.EVT_MENU, self.testBuild, id=StoryFrame.BUILD_TEST)
+        # buildMenu.Append(StoryFrame.BUILD_TEST, 'Test Play From Start\tCtrl-Shift-T')
+        # self.Bind(wx.EVT_MENU, self.testBuild, id=StoryFrame.BUILD_TEST)
 
         buildMenu.Append(StoryFrame.BUILD_VERIFY, '&Verify All Passages')
         self.Bind(wx.EVT_MENU, self.verify, id=StoryFrame.BUILD_VERIFY)
@@ -515,14 +515,22 @@ class StoryFrame(wx.Frame):
                                       wx.ICON_WARNING | wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT)
             result = dialog.ShowModal()
             if result == wx.ID_CANCEL:
-                event.Veto()
+                try:
+                    event.SetCanVeto(True)
+                    event.Veto()
+                except:
+                    pass
                 return
             elif result == wx.ID_NO:
                 self.dirty = False
-            else:
+            else: # YES
                 self.save(None)
                 if self.dirty:
-                    event.Veto()
+                    try:
+                        event.SetCanVeto(True)
+                        event.Veto()
+                    except:
+                        pass
                     return
 
         # ask all our widgets to close any editor windows
@@ -544,7 +552,7 @@ class StoryFrame(wx.Frame):
         if destroy:
             self.Destroy()
         if h != None:
-            h.Hide()
+            h.Hide() # hide hidden window again
 
     def exportSource(self, event=None):
         """Asks the user to choose a file to export source to, then exports the wiki."""
@@ -1207,6 +1215,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
         self.menus.FindItemById(wx.ID_REVERT_TO_SAVED).Enable(self.saveDestination != '' and self.dirty)
 
         # Edit menu
+
         undoItem = self.menus.FindItemById(wx.ID_UNDO)
         undoItem.Enable(self.storyPanel.canUndo())
         undoItem.SetText('Undo ' + self.storyPanel.undoAction() + '\tCtrl-Z'
@@ -1223,6 +1232,7 @@ Any macros in this passage will be run before the Start passage (or any passage 
         self.menus.FindItemById(StoryFrame.EDIT_FIND_NEXT).Enable(self.storyPanel.lastSearchRegexp is not None)
 
         # View menu
+
         self.menus.FindItemById(StoryFrame.VIEW_TOOLBAR).Check(self.showToolbar)
         self.menus.FindItemById(StoryFrame.VIEW_SNAP).Check(self.storyPanel.snapping)
         self.menus.FindItemById(StoryFrame.VIEW_OVERLAP).Check(self.storyPanel.overlapping)
@@ -1236,15 +1246,19 @@ Any macros in this passage will be run before the Start passage (or any passage 
             editItem.SetItemLabel("&Edit \"" + widget.passage.title + "\"\tCtrl-E")
             editItem.Enable(True)
             # Only allow test plays from story passages
-            testItem.SetItemLabel("&Test Play From \"" + widget.passage.title + "\"\tCtrl-T"
-                                  if widget.passage.isStoryPassage() else "&Test Play From Here\tCtrl-T")
-            testItem.Enable(widget.passage.isStoryPassage())
+            if widget.passage.isStoryPassage():
+                testItem.SetItemLabel("&Test Play From \"" + widget.passage.title + "\"\tCtrl-T")
+                self.Bind(wx.EVT_MENU, lambda e: self.testBuild(startAt = widget.passage.title), id = testItem.GetId())
+            else:
+                testItem.SetItemLabel("&Test Play From Start\tCtrl-T")
+                self.Bind(wx.EVT_MENU, lambda e: self.testBuild(), id = testItem.GetId())
+            testItem.Enable(True)
         else:
             editItem.SetItemLabel("&Edit Passage\tCtrl-E")
             editItem.Enable(False)
-            testItem.SetItemLabel("&Test Play From Here")
-            testItem.Enable(False)
-
+            testItem.SetItemLabel("&Test Play From Start\tCtrl-T")
+            self.Bind(wx.EVT_MENU, lambda e: self.testBuild(), id = testItem.GetId())
+            testItem.Enable(True)
         self.menus.FindItemById(StoryFrame.STORY_EDIT_FULLSCREEN).Enable(selections == 1)
         self.menus.FindItemById(StoryFrame.BUILD_REBUILD).Enable(self.buildDestination != '')
         self.menus.FindItemById(StoryFrame.BUILD_VIEW_LAST).Enable(self.buildDestination != '')

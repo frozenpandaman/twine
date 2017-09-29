@@ -14,6 +14,7 @@ A visual tool for creating interactive stories for the Web, based on the [Twee](
  * Add option to allow passage (widget) overlapping
  * Fix size of annotation passages; add note passages
  * Test play from seleted passage with Cmd-T across story formats
+   * If invalid (e.g. stylesheet, special passage), plays from Start
  * Fix 1.4.2 [bugs](https://twinery.org/wiki/twine_1.4.2_bugs) #1, 3, 5, 7, and 8
  * Use smaller toolbar icons
  * Use Flat Design(TM) mode by default; update dock icon
