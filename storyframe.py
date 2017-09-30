@@ -1,4 +1,4 @@
-import sys, re, os, urllib, urlparse, pickle, wx, codecs, tempfile, images, version
+import sys, re, os, urllib, urlparse, pickle, wx, codecs, tempfile, images, version, macros
 from wx.lib import imagebrowser
 from tiddlywiki import TiddlyWiki
 from storypanel import StoryPanel
@@ -269,7 +269,7 @@ class StoryFrame(wx.Frame):
 
         self.storyMenu.AppendSeparator()
 
-        # Story Settings submenu
+        # Story Settings (Special passages) submenu
 
         self.storySettingsMenu = wx.Menu()
 
@@ -308,7 +308,47 @@ class StoryFrame(wx.Frame):
 
         self.storyMenu.Append(wx.ID_ANY, 'Special Passages', self.storySettingsMenu)
 
+        # Macros submenu
+        # make sure to update createMacro() too
+
+        self.storyMacrosMenu = wx.Menu()
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_SUGARCANE, 'Universal')
+        self.Bind(wx.EVT_MENU, self.createMacro, id=StoryFrame.STORYMACROS_SUGARCANE)
+        label = self.storyMacrosMenu.FindItemById(StoryFrame.STORYMACROS_SUGARCANE)
+        label.Enable(False)
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_REPLACESET, '<<replace>> Macro Set')
+        self.Bind(wx.EVT_MENU, self.createMacro, id=StoryFrame.STORYMACROS_REPLACESET)
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_TIMEDGOTO, '<<timedgoto>>')
+        self.Bind(wx.EVT_MENU, self.createMacro, id=StoryFrame.STORYMACROS_TIMEDGOTO)
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_CYCLINGLINK, '<<cyclinglink>>')
+        self.Bind(wx.EVT_MENU, self.createMacro, id=StoryFrame.STORYMACROS_CYCLINGLINK)
+
+        self.storyMacrosMenu.AppendSeparator()
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_SUGARCUBE, 'SugarCube cariants')
+        self.Bind(wx.EVT_MENU, self.createMacro, id=StoryFrame.STORYMACROS_SUGARCUBE)
+        label = self.storyMacrosMenu.FindItemById(StoryFrame.STORYMACROS_SUGARCUBE)
+        label.Enable(False)
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_SC_REPLACELINK, '<<replacelink>> Macro Set')
+        self.Bind(wx.EVT_MENU, self.createMacro, id=StoryFrame.STORYMACROS_SC_REPLACELINK)
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_SC_CYCLINGLINK, '<<cyclinglink>> Variant')
+        self.Bind(wx.EVT_MENU, self.createMacro, id=StoryFrame.STORYMACROS_SC_CYCLINGLINK)
+
+        self.storyMacrosMenu.Append(StoryFrame.STORYMACROS_SC_MORE, 'More...')
+        self.Bind(wx.EVT_MENU, lambda e: wx.LaunchDefaultBrowser('https://www.motoslave.net/sugarcube/2/#downloads'),
+                  id=StoryFrame.STORYMACROS_SC_MORE)
+
+        self.storyMenu.Append(wx.ID_ANY, 'Insert Macros', self.storyMacrosMenu)
+
         self.storyMenu.AppendSeparator()
+
+        # Import Image submenu
 
         self.importImageMenu = wx.Menu()
         self.importImageMenu.Append(StoryFrame.STORY_IMPORT_IMAGE, 'From &File...')
@@ -805,6 +845,7 @@ font[face="''' + title + '''"] {
             return False
 
     def defaultTextForPassage(self, title):
+        #Special Passages
         if title == 'Start':
             return "Your story will display this passage first. Edit it by double clicking it."
 
@@ -831,6 +872,27 @@ Any macros in this passage will be run before the Start passage (or any passage 
         else:
             return ""
 
+    def defaultTextForMacro(self, title):
+        # Universal
+        if title == '<<replace>> Macro Set':
+            return macros.REPLACE_MACRO_SET, None
+
+        elif title == '<<timedgoto>>':
+            return macros.TIMEDGOTO, None
+
+        elif title == '<<cyclinglink>>':
+            return macros.CYCLINGLINK, None
+
+        # SugarCube variants
+        elif title == '<<replacelink>> Macro Set':
+            return macros.REPLACELINK_VARIANT, macros.REPLACELINK_VARIANT_CSS
+
+        elif title == '<<cyclinglink>> Variant':
+            return macros.CYCLINGLINK_VARIANT, None
+
+        else:
+            return "", None
+
     def createInfoPassage(self, event):
         """Open an editor for a special passage; create it if it doesn't exist yet."""
 
@@ -843,6 +905,20 @@ Any macros in this passage will be run before the Start passage (or any passage 
             editingWidget = self.storyPanel.newWidget(title=title, text=self.defaultTextForPassage(title))
 
         editingWidget.openEditor()
+
+    def createMacro(self, event):
+        """Open an editor for a macro; create it if it doesn't exist yet."""
+
+        id = event.GetId()
+        title = self.storyMacrosMenu.FindItemById(id).GetLabel()
+
+        editingWidget = self.storyPanel.findWidget(title)
+        if editingWidget is None:
+            if self.defaultTextForMacro(title)[1] == None:
+                self.storyPanel.newWidget(title=title, text=self.defaultTextForMacro(title)[0], tags=["script"])
+            else: # CSS exists
+                self.storyPanel.newWidget(title=title, text=self.defaultTextForMacro(title)[0], tags=["script"])
+                self.storyPanel.newWidget(title=title + " CSS", text=self.defaultTextForMacro(title)[1], tags=["stylesheet"])
 
     def save(self, event=None):
         if self.saveDestination == '':
@@ -1346,7 +1422,8 @@ Any macros in this passage will be run before the Start passage (or any passage 
      STORY_IMPORT_IMAGE, STORY_IMPORT_IMAGE_URL, STORY_IMPORT_FONT, STORY_FORMAT_HELP, STORYSETTINGS_START,
      STORYSETTINGS_TITLE, STORYSETTINGS_SUBTITLE, STORYSETTINGS_AUTHOR, \
      STORYSETTINGS_MENU, STORYSETTINGS_SETTINGS, STORYSETTINGS_INCLUDES, STORYSETTINGS_INIT, STORYSETTINGS_HELP,
-     REFRESH_INCLUDES_LINKS] = range(401, 422)
+     STORYMACROS_SUGARCANE, STORYMACROS_REPLACESET, STORYMACROS_TIMEDGOTO, STORYMACROS_CYCLINGLINK, STORYMACROS_SUGARCUBE, STORYMACROS_SC_REPLACELINK, STORYMACROS_SC_CYCLINGLINK, STORYMACROS_SC_MORE,
+     REFRESH_INCLUDES_LINKS] = range(401, 430)
 
     STORY_FORMAT_BASE = 501
 

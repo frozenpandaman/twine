@@ -11,6 +11,7 @@ A visual tool for creating interactive stories for the Web, based on the [Twee](
  * Save and restore window size on save/open
  * Fix file opening & closing
    * Program stays open even with zero stories open
+ * Macro auto-insertion via Story menu
  * Add option to allow passage (widget) overlapping
  * Fix size of annotation passages; add note passages
  * Test play from seleted passage with Cmd-T across story formats
